@@ -1,12 +1,11 @@
 {
   "compilerOptions": {
     "rootDir": ".",
-    "paths": {
-      "@hooks": ["./@hooks"]
-    },
+    "baseUrl": ".",
 
     "types": ["./global.d.ts"],
     "lib": ["ESNext"],
+    "noEmit": true,
     "strict": true
   }
 }

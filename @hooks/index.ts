@@ -3,6 +3,7 @@ export * from "./indicators/BOLL";
 export * from "./indicators/EMA";
 export * from "./indicators/HV";
 export * from "./indicators/MACD";
+export * from "./indicators/MAX";
 export * from "./indicators/MIN";
 export * from "./indicators/RANGE";
 export * from "./indicators/RSI";
