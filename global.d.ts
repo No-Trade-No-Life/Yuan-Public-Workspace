@@ -363,7 +363,11 @@ declare const useEffect: (fn: () => (() => void) | void, deps?: any[]) => void;
 declare const useMemo: <T>(fn: () => T, deps: any[]) => T;
 /** 使用状态，类似 React.useState */
 declare const useState: <T>(initState: T) => [T, (v: T) => void];
-
+/** 缓存计算，类似 useMemo，但是会异步阻塞后续的流程 */
+declare const useMemoAsync: <T>(
+  fn: () => Promise<T>,
+  deps?: any[] | undefined
+) => Promise<T>;
 // 基本参数
 /** 使用应用参数 (数字) */
 declare const useParamNumber: (key: string, defaultValue?: number) => number;
