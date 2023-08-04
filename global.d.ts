@@ -11,8 +11,6 @@ declare interface IOrder {
    * 交易所订单ID (如果有)
    */
   exchange_order_id?: string;
-  /** 下单器指定的订单来源 */
-  originator?: string;
   /**
    * 账户 ID
    *
@@ -144,17 +142,6 @@ declare interface IPosition {
    */
   comment?: string;
 }
-/** 品种的持仓合计信息 @public */
-declare interface IProductPositionSummary {
-  /** 品种 ID */
-  product_id: string;
-  /**
-   * 净持仓头寸 (+: 多头; -: 空头)
-   */
-  net_volume: number;
-  /** 持仓成本价 (可通过 product_id 得到价格的内在含义) */
-  position_price: number;
-}
 /**
  * 账户资金信息
  *
@@ -226,54 +213,6 @@ declare interface IAccountInfo {
   timestamp_in_us: number;
 }
 /**
- * 交易方向
- * @public
- */
-declare enum TradeDirection {
-  /** 做多 / 买入 */
-  LONG = 0,
-  /** 做空 / 卖出 */
-  SHORT = 1,
-}
-/**
- * 交易: 开仓到平仓的过程
- *
- * @public
- */
-declare interface ITrade {
-  /** 品种 */
-  product_id: string;
-  /** 方向 */
-  direction: TradeDirection;
-  /** 成交量 */
-  volume: number;
-  /** 开仓时间戳 */
-  open_timestamp_in_us: number;
-  /** 开仓均价 */
-  open_price: number;
-  /** 平仓时间戳 */
-  close_timestamp_in_us: number;
-  /** 平仓均价 */
-  close_price: number;
-  /** 交易成本 */
-  cost: number;
-  /** 价差盈亏 */
-  profit: number;
-  /** 净利润 = 价差盈亏 + 交易成本 */
-  net_profit: number;
-}
-/** 账户资产 @alpha @deprecated "NO USED" */
-declare interface IAccountingAsset {
-  /** 资产 ID */
-  asset_id: string;
-  /** 账户 ID */
-  account_id: string;
-  /** 活动额度 (可以发起订单的量) */
-  active: number;
-  /** 冻结额度 (已经发起订单，尚未成交结算的量) */
-  inactive: number;
-}
-/**
  * 品种: 交易的标的物
  *
  * @public
@@ -317,24 +256,6 @@ declare interface IProduct {
    * 如果此值为 true，需要在标准收益公式中额外除以本品种的"平仓时的价格"。
    */
   is_underlying_base_currency?: boolean;
-  /**
-   * 标的资产 ID
-   *
-   * @deprecated 不需要知道了
-   */
-  underlying_asset_id?: string;
-  /**
-   * 结算资产 ID
-   *
-   * @deprecated 不需要知道了
-   */
-  settlement_asset_id?: string;
-  /**
-   * 报价资产 ID
-   *
-   * @deprecated 不需要知道了
-   */
-  quote_asset_id?: string;
   /** 报价单位 */
   price_step: number;
   /** 成交量单位 (单位: 手) */
@@ -432,117 +353,6 @@ declare enum OrderStatus {
   /** 已撤单 */
   CANCELLED = 2,
 }
-/**
- * Tick: 某个时刻的市场成交行情数据
- * @public
- */
-declare interface ITick {
-  /** 数据源 ID */
-  datasource_id: string;
-  /** 品种 ID */
-  product_id: string;
-  /** 时间戳 */
-  timestamp_in_us: number;
-  /** 成交价 */
-  price: number;
-  /** 成交量 */
-  volume: number;
-  /** 持仓量 */
-  open_interest?: number;
-  /** 点差 */
-  spread?: number;
-  /** 卖一价 */
-  ask?: number;
-  /** 买一价 */
-  bid?: number;
-}
-/**
- * Period: 某个时间段内的市场成交行情数据
- * @public
- */
-declare interface IPeriod {
-  /** 数据源 ID */
-  datasource_id: string;
-  /** 品种 ID */
-  product_id: string;
-  /** 时间周期 (秒) */
-  period_in_sec: number;
-  /** 开始时间戳 (open) */
-  timestamp_in_us: number;
-  /** 开盘价 */
-  open: number;
-  /** 最高价 */
-  high: number;
-  /** 最低价 */
-  low: number;
-  /** 收盘价 */
-  close: number;
-  /** 成交量 */
-  volume: number;
-  /** 持仓量 */
-  open_interest?: number;
-  /** 点差 */
-  spread?: number;
-}
-
-/**
- * 订阅关系
- *
- * @public
- */
-declare interface ISubscriptionRelation {
-  /** 订阅频道 */
-  channel_id: string;
-  /** 生产者 终端ID */
-  provider_terminal_id: string;
-  /** 消费者 终端ID */
-  consumer_terminal_id: string;
-}
-/**
- * 数据记录
- *
- * @public
- */
-declare interface IDataRecord<T = unknown> {
-  /** 记录的标识符 */
-  id: string;
-  /**
-   * 记录的类型
-   *
-   * 不同的类型应当具有一致的 schema，并推荐存储到不同的表中，避免该表使用的索引空间增长过快
-   */
-  type: string;
-  /**
-   * 记录被创建的时间戳 (in ms)
-   *
-   * null 代表 -Infinity, 即过去的无穷远处
-   */
-  created_at: number | null;
-  /**
-   * 记录更新的时间戳 (in ms)
-   *
-   * 同一记录存在多份时，应以此字段最大者为准。
-   */
-  updated_at: number;
-  /**
-   * 记录冻结的时间戳 (in ms)
-   *
-   * 在此时间点之后，记录将不再更新，可以任意被缓存到各终端
-   *
-   * null 代表 Infinity, 即未来的无穷远处
-   */
-  frozen_at: number | null;
-  /**
-   * 可以作为快速检索条件的字段
-   *
-   * 存储时，值会被 toString
-   */
-  tags: Record<string, string>;
-  /**
-   * 记录的原始值，不支持高效的检索
-   */
-  origin: T;
-}
 
 // 基础 Hook
 /** 使用变量的引用，在所有的执行阶段保持对同一个值的引用，类似 React.useRef */
@@ -570,14 +380,6 @@ declare class Series extends Array<number> {
   tags: Record<string, any>;
   parent: Series | undefined;
 }
-declare interface IOutputSeriesOption {
-  type?: "Line" | "Histogram";
-  panel?: "main" | "auxiliary";
-  color?: string;
-  parent?: Series;
-}
-/** 使用应用参数 (序列) */
-declare const useParamSeries: (key: string) => Series;
 /** 使用序列 */
 declare const useSeries: (
   name: string,
