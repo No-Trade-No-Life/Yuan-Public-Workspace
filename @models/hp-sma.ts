@@ -1,6 +1,5 @@
 // 使用了 HP Filter 的双均线策略
-import { useSMA } from "@hooks";
-import { useHP } from "@hooks";
+import { useHPFilter, useSMA } from "@hooks";
 
 export default () => {
   // 设定参数
@@ -14,7 +13,7 @@ export default () => {
   // NOTE: 使用当前 K 线的上一根 K 线的收盘价，保证策略在 K 线结束时才会执行
   const idx = c.length - 2;
 
-  const hp = useHP(c, lambda)
+  const hp = useHPFilter(c, lambda);
 
   // 使用 20，60 均线
   const sma20 = useSMA(hp, 20);
@@ -24,37 +23,17 @@ export default () => {
   const pL = useSinglePosition(product_id, PositionVariant.LONG);
   const pS = useSinglePosition(product_id, PositionVariant.SHORT);
 
-  // 金叉开多平空
   useEffect(() => {
-    if (idx < 60) {
-      return;
+    if (idx < 60) return; // 略过一开始不成熟的均线数据
+    // 金叉开多平空
+    if (sma20[idx] > sma60[idx]) {
+      pL.setTargetVolume(1);
+      pS.setTargetVolume(0);
     }
-    const price = c[idx];
-    if (pL.volume === 0) {
-      if (sma20[idx] > sma60[idx] && price > sma20[idx]) {
-        pL.setTargetVolume(1);
-      }
-    } else {
-      if (pL.volume > 0 && sma20[idx] < sma60[idx]) {
-        pL.setTargetVolume(0);
-      }
-    }
-  }, [idx]);
-
-  // 死叉开空平多
-  useEffect(() => {
-    if (idx < 60) {
-      return;
-    }
-    const price = c[idx];
-    if (pS.volume === 0) {
-      if (sma20[idx] < sma60[idx] && price < sma20[idx]) {
-        pS.setTargetVolume(1);
-      }
-    } else {
-      if (pS.volume < 0 && sma20[idx] > sma60[idx]) {
-        pS.setTargetVolume(0);
-      }
+    // 死叉开空平多
+    if (sma20[idx] < sma60[idx]) {
+      pL.setTargetVolume(0);
+      pS.setTargetVolume(1);
     }
   }, [idx]);
 };
