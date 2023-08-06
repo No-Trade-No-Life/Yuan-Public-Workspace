@@ -436,4 +436,6 @@ declare const useExchange: () => {
 /** 使用日志函数 */
 declare const useLog: () => (...params: any[]) => void;
 /** 使用记录表 */
-declare const useRecordTable: (title: string) => Record<string, any>[];
+declare const useRecordTable: <T extends Record<string, any>>(
+  title: string
+) => T[];
