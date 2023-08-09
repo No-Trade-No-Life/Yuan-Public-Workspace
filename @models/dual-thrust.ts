@@ -4,20 +4,11 @@
 import { useMAX, useMIN } from "@hooks";
 
 export default () => {
-  // 设定参数
-  const datasource_id = useParamString("数据源ID");
-  const product_id = useParamString("品种ID");
-  const period_in_sec = useParamNumber("周期");
+  const { product_id, open, high, low, close } = useParamOHLC("SomeKey");
   const N = useParamNumber("N", 20);
   const K1 = useParamNumber("K1", 0.2);
   const K2 = useParamNumber("K2", 0.2);
 
-  // 使用收盘价序列
-  const { open, high, low, close } = useOHLC(
-    datasource_id,
-    product_id,
-    period_in_sec
-  );
   // 计算 Dual Thrust 策略所需的指标
   const HH = useMAX(high, N);
   const HC = useMAX(close, N);

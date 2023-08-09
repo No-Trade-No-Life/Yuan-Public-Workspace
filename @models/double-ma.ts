@@ -4,13 +4,8 @@
 import { useSMA } from "@hooks";
 
 export default () => {
-  // 设定参数
-  const datasource_id = useParamString("数据源ID");
-  const product_id = useParamString("品种ID");
-  const period_in_sec = useParamNumber("周期");
-
   // 使用收盘价序列
-  const { close } = useOHLC(datasource_id, product_id, period_in_sec);
+  const { product_id, close } = useParamOHLC("SomeKey");
   // NOTE: 使用当前 K 线的上一根 K 线的收盘价，保证策略在 K 线结束时才会执行
   const idx = close.length - 2;
 
