@@ -3,17 +3,9 @@
 
 export default () => {
   // 设定参数
-  const datasource_id = useParamString("数据源ID");
-  const product_id = useParamString("品种ID");
-  const higher_period = useParamNumber("高周期", 86400);
-  const lower_period = useParamNumber("低周期", 60);
+  const { product_id, close: C } = useParamOHLC("低周期"); // e.g. 1min
+  const { high, low, close } = useParamOHLC("高周期"); // e.g. 1Day
 
-  const { close: C } = useOHLC(datasource_id, product_id, lower_period);
-  const { high, low, close } = useOHLC(
-    datasource_id,
-    product_id,
-    higher_period
-  );
   const idx = close.length - 2;
   const 中心价位 = (high[idx] + low[idx] + close[idx]) / 3;
   const 突破买入价 = high[idx] + 2 * 中心价位 - 2 * low[idx];
