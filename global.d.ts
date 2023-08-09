@@ -392,6 +392,13 @@ declare const useSeries: (
 ) => Series;
 
 // 业务类 Hook
+/** 使用品种信息 */
+declare const useProduct: (
+  datasource_id: string,
+  product_id: string
+) => IProduct;
+/** 使用品种参数 */
+declare const useParamProduct: (key: string) => IProduct;
 /** 使用周期数据 \`[idx, timestamp_in_us, open, high, low, close, volume]\` */
 declare const useOHLC: (
   datasource_id: string,
@@ -404,6 +411,12 @@ declare const useOHLC: (
   low: Series;
   close: Series;
   volume: Series;
+};
+/** 使用 OHLC 数据 */
+declare const useParamOHLC: (key: string) => ReturnType<typeof useOHLC> & {
+  datasource_id: string;
+  product_id: string;
+  period_in_sec: number;
 };
 /** 使用账户信息 */
 declare const useAccountInfo: () => IAccountInfo;
