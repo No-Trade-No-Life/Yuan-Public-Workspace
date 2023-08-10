@@ -1,5 +1,4 @@
-import { useMAX } from "./MAX";
-import { useMIN } from "./MIN";
+import { useMAX, useMIN } from "@libs";
 
 /**
  * 计算全距 (极差)，即数据源在窗口时间内的最大值与最小值之差

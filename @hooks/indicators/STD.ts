@@ -1,4 +1,4 @@
-import { useSMA } from "./SMA";
+import { useSMA } from "@libs";
 
 /**
  * 计算标准差

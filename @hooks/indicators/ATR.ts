@@ -1,4 +1,4 @@
-import { useSMA } from "./SMA";
+import { useSMA } from "@libs";
 
 /**
  * 计算真实波动范围 (ATR)

@@ -1,4 +1,4 @@
-import { useSUM } from "./SUM";
+import { useSUM } from "@libs";
 /**
  * 使用移动平均线指标
  * @param source

@@ -1,4 +1,4 @@
-import { useSTD } from "./STD";
+import { useSTD } from "@libs";
 /**
  * 计算历史波动率指标
  * @param source
