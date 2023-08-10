@@ -1,4 +1,4 @@
-import { useEMA } from "./EMA";
+import { useEMA } from "@libs";
 
 /**
  * 计算平滑异同移动平均线 (MACD)

@@ -1,4 +1,4 @@
-import { useEMA } from "./EMA";
+import { useEMA } from "@libs";
 
 /**
  * 计算相对强弱指标 (RSI)

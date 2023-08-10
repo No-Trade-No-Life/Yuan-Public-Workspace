@@ -1,7 +1,7 @@
 // Dual Thrust 策略
 // 收盘价突破上轨，做多
 // 收盘价突破下轨，做空
-import { useMAX, useMIN } from "@hooks";
+import { useMAX, useMIN } from "@libs";
 
 export default () => {
   const { product_id, open, high, low, close } = useParamOHLC("SomeKey");

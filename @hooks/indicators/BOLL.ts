@@ -1,5 +1,4 @@
-import { useSMA } from "./SMA";
-import { useSTD } from "./STD";
+import { useSMA, useSTD } from "@libs";
 
 /**
  * 计算 BOLL 指标
