@@ -15,6 +15,10 @@ export const useKDJ = (
 ) => {
   const L = useMIN(low, n);
   const H = useMAX(high, n);
+  useEffect(() => {
+    L.tags.display = "none";
+    H.tags.display = "none";
+  }, []);
   const RSV = useSeriesMap(
     `RSV(${n})`,
     close,
