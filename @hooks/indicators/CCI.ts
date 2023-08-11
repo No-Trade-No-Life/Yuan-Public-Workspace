@@ -22,6 +22,7 @@ export const useCCI = (
   const ma = useSMA(tp, period);
   const dev = useSTD(tp, period);
   useEffect(() => {
+    ma.tags.display = "none";
     dev.tags.display = "none";
   }, []);
   const CCI = useSeriesMap(
