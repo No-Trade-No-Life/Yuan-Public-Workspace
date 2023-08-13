@@ -1,4 +1,4 @@
-import { useSMA, useSTD } from "@libs";
+import { useSMA, useSTD, useSeriesMap } from "@libs";
 
 /**
  * 计算 BOLL 指标
@@ -19,21 +19,17 @@ export const useBOLL = (
   useEffect(() => {
     STD.tags.display = "none";
   }, []);
-  const UPPER = useSeries(
+  const UPPER = useSeriesMap(
     `BOLL.UPPER(${source.name}, ${period}, ${multiplier})`,
     source,
-    { display: "line" }
+    { display: "line" },
+    (i) => MIDDLE[i] + multiplier * STD[i]
   );
-  const LOWER = useSeries(
+  const LOWER = useSeriesMap(
     `BOLL.LOWER(${source.name}, ${period}, ${multiplier})`,
     source,
-    { display: "line" }
+    { display: "line" },
+    (i) => MIDDLE[i] - multiplier * STD[i]
   );
-  useEffect(() => {
-    const i = source.length - 1;
-    if (i < 0) return;
-    UPPER[i] = MIDDLE[i] + multiplier * STD[i];
-    LOWER[i] = MIDDLE[i] - multiplier * STD[i];
-  });
   return { MIDDLE, UPPER, LOWER };
 };

@@ -1,4 +1,4 @@
-import { useEMA } from "@libs";
+import { useEMA, useSeriesMap } from "@libs";
 
 /**
  * 计算平滑异同移动平均线 (MACD)
@@ -19,33 +19,25 @@ export const useMACD = (
     fastEMA.tags.display = "none";
     slowEMA.tags.display = "none";
   }, []);
-  const DIF = useSeries(
+  const DIF = useSeriesMap(
     `MACD.DIF(${source.name}, ${fastPeriod}, ${slowPeriod}, ${signalPeriod})`,
     source,
-    { display: "line", chart: "new" }
+    { display: "line", chart: "new" },
+    (i) => fastEMA[i] - slowEMA[i]
   );
-  useEffect(() => {
-    const i = source.length - 1;
-    if (i < 0) return;
-    DIF[i] = fastEMA[i] - slowEMA[i];
-  });
   const DEA = useEMA(DIF, signalPeriod);
   useEffect(() => {
     DEA.name = `MACD.DEA(${source.name}, ${fastPeriod}, ${slowPeriod}, ${signalPeriod})`;
     DEA.tags.chart = DIF.series_id;
   }, []);
-  const MACD = useSeries(
+  const MACD = useSeriesMap(
     `MACD.MACD(${source.name}, ${fastPeriod}, ${slowPeriod}, ${signalPeriod})`,
     source,
     {
       display: "hist",
       chart: DIF.series_id,
-    }
+    },
+    (i) => DIF[i] - DEA[i]
   );
-  useEffect(() => {
-    const i = source.length - 1;
-    if (i < 0) return;
-    MACD[i] = DIF[i] - DEA[i];
-  });
   return { DIF, DEA, MACD };
 };

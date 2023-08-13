@@ -1,4 +1,4 @@
-import { useSMA } from "@libs";
+import { useSMA, useSeriesMap } from "@libs";
 
 /**
  * 计算真实波动范围 (ATR)
@@ -14,19 +14,14 @@ export const useATR = (
   C: Series,
   period: number = 14
 ) => {
-  const TR = useSeries("TR", C);
-  useEffect(() => {
-    const i = C.length - 1;
-    if (i < 0) return;
-    TR[i] = Math.abs(H[i] - L[i]);
-    if (i > 0) {
-      TR[i] = Math.max(
-        TR[i],
-        Math.abs(H[i] - C[i - 1]),
-        Math.abs(L[i] - C[i - 1])
-      );
-    }
-  });
+  const TR = useSeriesMap("TR", C, {}, (i) =>
+    Math.max(
+      //
+      Math.abs(H[i] - L[i]),
+      i > 0 ? Math.abs(H[i] - C[i - 1]) : -Infinity,
+      i > 0 ? Math.abs(L[i] - C[i - 1]) : -Infinity
+    )
+  );
   const ATR = useSMA(TR, period);
   useEffect(() => {
     ATR.name = `ATR(${period})`;

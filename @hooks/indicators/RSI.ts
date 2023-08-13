@@ -1,4 +1,4 @@
-import { useEMA } from "@libs";
+import { useEMA, useSeriesMap } from "@libs";
 
 /**
  * 计算相对强弱指标 (RSI)
@@ -6,25 +6,22 @@ import { useEMA } from "@libs";
  * @param period - 周期
  */
 export const useRSI = (source: Series, period = 14) => {
-  const RSI = useSeries(`RSI(${source.name},${period})`, source, {
-    display: "line",
-    chart: "new",
-  });
-  const U = useSeries("U", source);
-  const D = useSeries("D", source);
-  useEffect(() => {
-    const i = source.length - 1;
-    if (i < 0) return;
-    U[i] = source[i] > source[i - 1] ? source[i] - source[i - 1] : 0;
-    D[i] = source[i] < source[i - 1] ? source[i - 1] - source[i] : 0;
-  });
-
+  const U = useSeriesMap("U", source, {}, (i) =>
+    source[i] > source[i - 1] ? source[i] - source[i - 1] : 0
+  );
+  const D = useSeriesMap("D", source, {}, (i) =>
+    source[i] < source[i - 1] ? source[i - 1] - source[i] : 0
+  );
   const EMA_U = useEMA(U, period);
   const EMA_D = useEMA(D, period);
-  useEffect(() => {
-    const i = source.length - 1;
-    if (i < 0) return;
-    RSI[i] = (EMA_U[i] / (EMA_U[i] + EMA_D[i])) * 100;
-  });
+  const RSI = useSeriesMap(
+    `RSI(${source.name},${period})`,
+    source,
+    {
+      display: "line",
+      chart: "new",
+    },
+    (i) => (EMA_U[i] / (EMA_U[i] + EMA_D[i])) * 100
+  );
   return RSI;
 };
