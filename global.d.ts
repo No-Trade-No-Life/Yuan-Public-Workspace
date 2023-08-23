@@ -1,344 +1,410 @@
 /**
- * 订单: 通过交易命令改变账户内 {@link IAccountInfo} 头寸 {@link IPosition}
+ * Order: Change the {@link IPosition} of {@link IAccountInfo} in the account through trading commands
  * @public
  */
 declare interface IOrder {
   /**
-   * 客户端订单ID
+   * Client order ID
    */
   client_order_id: string;
   /**
-   * 交易所订单ID (如果有)
+   * Exchange order ID (if any)
    */
   exchange_order_id?: string;
   /**
-   * 账户 ID
+   * Account ID
    *
    * {@link IAccountInfo.account_id}
    */
   account_id: string;
   /**
-   * 品种 ID
+   * Product ID
    *
    * {@link IProduct}
    */
   product_id: string;
   /**
-   * 指定需要操作的头寸 ID
+   * Specify the position ID that needs to be operated
    *
-   * - 如果留空，表达 "操作同账户、同品种下哪个具体头寸都可以"
-   * - 如果填写了，只能操作匹配的头寸，不得影响同账户下同品种下的其他头寸。
+   * - If left blank, it means "which specific position under the same account and product can be operated"
+   * - If filled in, only the matching position can be operated, and other positions under the same account and product cannot be affected.
    *
    * {@link IPosition.position_id}
    */
   position_id?: string;
-  /** 订单类型 */
+  /** Order type */
   type: OrderType;
-  /** 订单方向 */
+  /** Order direction */
   direction: OrderDirection;
-  /** 委托量 */
+  /** Commission volume */
   volume: number;
   /**
-   * 非标准模型下的盈亏修正
+   * Profit and loss correction under non-standard models
    *
-   * 当盈亏模型非标准时，可以添加一个盈亏修正值，将标准模型盈亏修正到实际盈亏。
+   * When the profit and loss model is non-standard, a profit and loss correction value can be added to correct the standard model profit and loss to the actual profit and loss.
    *
-   * 盈亏修正 = 实际盈亏 - 标准盈亏
+   * Profit and loss correction = actual profit and loss - standard profit and loss
    *
-   * 如果此值为空，语义等同于 0
+   * If this value is empty, the semantics are equivalent to 0
    *
-   * 参考 [如何计算盈亏](https://tradelife.feishu.cn/wiki/wikcnRNzWSF7jtkH8nGruaMhhlh)
+   * Refer to [How to calculate profit and loss](https://tradelife.feishu.cn/wiki/wikcnRNzWSF7jtkH8nGruaMhhlh)
    *
    */
   profit_correction?: number;
   /**
-   * 实际盈亏
+   * Actual profit and loss
    *
-   * 平仓时，对账户的余额产生的改变量
+   * When closing a position, the amount of change in the account balance
    *
-   * 如果此值为空，语义等同于 "盈亏修正 == 0" 即 "标准盈亏 == 实际盈亏"
+   * If this value is empty, the semantics are equivalent to "profit and loss correction == 0", that is, "standard profit and loss == actual profit and loss"
    *
-   * 参考 [如何计算盈亏](https://tradelife.feishu.cn/wiki/wikcnRNzWSF7jtkH8nGruaMhhlh)
+   * Refer to [How to calculate profit and loss](https://tradelife.feishu.cn/wiki/wikcnRNzWSF7jtkH8nGruaMhhlh)
    */
   real_profit?: number;
   /**
-   * 推断得到的平仓时基准货币兑保证金货币的价格
+   * Inferred price of the base currency against the margin currency when closing the position
    *
-   * 如果此值为空，语义等同于 1 (即基准货币 == 保证金货币)
+   * if this value is empty, the semantics are equivalent to 1 (that is, the base currency == margin currency)
    *
-   * 参考 [如何计算盈亏](https://tradelife.feishu.cn/wiki/wikcnRNzWSF7jtkH8nGruaMhhlh)
+   * Refer to [How to calculate profit and loss](https://tradelife.feishu.cn/wiki/wikcnRNzWSF7jtkH8nGruaMhhlh)
    */
   inferred_base_currency_price?: number;
-  /** 下单时间戳 / 成交时间戳 */
+  /**
+   * Order timestamp / transaction timestamp
+   */
   timestamp_in_us?: number;
-  /** 委托价 */
+  /**
+   * Order price
+   */
   price?: number;
+  /**
+   * Traded volume
+   */
   /** 成交量 */
   traded_volume?: number;
-  /** 成交价 */
+  /**
+   * Traded price
+   */
   traded_price?: number;
-  /** 订单状态 */
+  /**
+   * Order status
+   */
   status?: OrderStatus;
-  /** 订单注释 */
+  /**
+   * Order comment
+   */
   comment?: string;
-  /** 止盈价 (暂时不可用) */
+  /**
+   * Take profit price
+   */
   take_profit_price?: number;
-  /** 止损价 (暂时不可用) */
+  /**
+   * Stop loss price
+   */
   stop_loss_price?: number;
 }
 /**
- * 头寸类型
+ * Position Variant
  * @public
  */
 declare enum PositionVariant {
-  /** 做多 */
+  /** Long */
   LONG = 0,
-  /** 做空 */
+  /** Short */
   SHORT = 1,
 }
 /**
- * 原子性的持仓头寸信息
+ * Atomic position information
  *
- * 相同品种上的头寸可以被合计
+ * Same product positions can be summed up into one position
  *
  * @public
  */
 declare interface IPosition {
   /**
-   * 头寸 ID
+   * Position ID
    */
   position_id: string;
-  /** 品种 ID */
+  /**
+   * Product ID
+   */
   product_id: string;
   /**
-   * 仓位类型
+   * Position variant
    *
-   * 可以根据仓位类型计算净头寸
+   * can be used to calculate net position
    */
   variant: PositionVariant;
   /**
-   * 持仓量 (非负)
+   * Volume
    *
-   * 结算净值时应参考此字段
+   * Settlement net value should refer to this field
    */
   volume: number;
   /**
-   * 可交易量 (非负)
+   * Tradable volume (non-negative)
    *
-   * 下单时应检查此字段
+   * This field should be checked when placing an order
    *
-   * 市场为 T+0 交易时应当与 volume 字段一致;
-   * 市场为 T+1 交易时，可能比 volume 小.
+   * When the market is T+0 trading, it should be consistent with the volume field;
+   * When the market is T+1 trading, it may be smaller than the volume.
    */
   free_volume: number;
-  /** 持仓成本价 (可通过 product_id 得到价格的内在含义) */
+  /** Position cost price (the intrinsic meaning of the price can be obtained through product_id) */
   position_price: number;
-  /** 当前可平仓结算价格 */
+  /** Current closable settlement price */
   closable_price: number;
-  /** 持仓浮动盈亏 */
+  /** Floating profit and loss of the position */
   floating_profit: number;
   /**
-   * 头寸的备注
+   * Remarks of the position
    */
   comment?: string;
 }
 /**
- * 账户资金信息
+ * Account fund information
  *
  * @remarks
  *
- * 净值符合方程:
+ * Net value conforms to the equation:
  *
- * 1. 净值 = 余额 + 浮动盈亏
+ * 1. Net value = balance + floating profit and loss
  *
- * 2. 净值 = 可用保证金 + 占用保证金
+ * 2. Net value = available margin + margin in use
  *
- * 如果交易所已提供这些字段，直接用交易所的。否则可以根据如下算法计算:
+ * If the exchange has provided these fields, use them directly. Otherwise, they can be calculated according to the following algorithm:
  *
- * 1. 浮动盈亏 := 所有头寸的品种的当前报价和持仓价的价差形成的盈亏之和
+ * 1. Floating profit and loss := the sum of the profits and losses formed by the price difference between the current quote and the position price of all positions of the variety
  *
- * 2. 可用保证金 := 所有头寸的价值所对应的保证金
+ * 2. Available margin := the margin corresponding to the value of all positions
  *
- * 3. 余额 := 开仓时不会变，仅平仓的时候会将头寸的浮动盈亏加入余额
+ * 3. Balance := does not change when opening a position, only when closing a position, the floating profit and loss of the position is added to the balance
  *
- * 4. 净值 := 余额 + 浮动盈亏
+ * 4. Net value := balance + floating profit and loss
  *
- * 5. 可用保证金 := 净值 - 占用保证金
+ * 5. Available margin := net value - margin in use
  *
  * @public
  */
 declare interface IAccountMoney {
   /**
-   * 账户的结算货币
+   * Settlement currency of the account
    *
    * @example "CNY"
    */
   currency: string;
   /**
-   * 净值: 账户的权益
+   * Net value: equity of the account
    */
   equity: number;
   /**
-   * 余额: 开仓前的余额
+   * Balance: balance before opening a position
    */
   balance: number;
   /**
-   * 浮动盈亏: 持仓中的头寸产生的总浮动盈亏
+   * Floating profit and loss: total floating profit and loss generated by positions in the account
    */
   profit: number;
-  /** 可用资金/可用保证金 */
+  /**
+   * Available funds/available margin
+   */
   free: number;
-  /** 已用资金/已用保证金 */
+  /**
+   * Used funds/used margin
+   */
   used: number;
   /**
-   * 账户杠杆率
+   * Account leverage ratio
    */
   leverage?: number;
 }
-/** 账户信息 @public */
+
+/** Account information @public */
 declare interface IAccountInfo {
-  /** 账户ID */
+  /** Account ID */
   account_id: string;
-  /** 资金信息 */
+  /** Fund information */
   money: IAccountMoney;
-  /** 持仓信息 */
+  /** Position information */
   positions: IPosition[];
-  /** 未成交的挂单 */
+  /** Unfilled orders */
   orders: IOrder[];
   /**
-   * 账户信息产生的时间戳
+   * Timestamp when the account information was generated
    *
-   * (用于处理冲突: 应当总是接受最新的信息)
+   * (Used for conflict resolution: always accept the latest information)
    */
   timestamp_in_us: number;
 }
+
 /**
- * 品种: 交易的标的物
+ * Product: Subject Matter of trading
  *
  * @public
  */
 declare interface IProduct {
-  /** 数据源 ID */
+  /** Data source ID */
   datasource_id: string;
-  /** 品种 ID */
+  /** Product ID */
   product_id: string;
-  /** 可读的品种名 */
+  /** Readable product name */
   name?: string;
+
   /**
-   * 基准货币 (Base Currency)
+   * Base Currency
    *
-   * 基准货币是汇率报价中作为基础的货币，即报价表达形式为每一个单位的货币可兑换多少另一种货币。
+   * The base currency is the currency used as the basis for exchange rate quotes, expressed as the number of units of the currency that can be exchanged for one unit of the quoted currency.
    *
+   * e.g. The base currency of GBPJPY is GBP; the base currency of USDCAD is USD.
    * e.g. GBPJPY 的 base_currency 为 GBP; USDCAD 的 base_currency 为 USD.
    */
   base_currency: string;
+
   /**
-   * 标价货币 (Quoted Currency)
+   * Quoted Currency
    *
-   * 汇率的表达方式为一单位的基准货币可兑换多少单位的标价货币
+   * The quoted currency is the currency being used as the reference for the exchange rate quote, expressed as the number of units of the quoted currency that can be exchanged for one unit of the base currency.
    *
+   * e.g. The quoted currency of GBPJPY is JPY; the quoted currency of USDCAD is CAD.
    * e.g. GBPJPY 的 quoted_currency 为 JPY; USDCAD 的 quoted_currency 为 CAD.
    *
-   * 对于非外汇品种，quoted_currency 应当为空。
+   * For non-forex products, the quoted currency should be empty.
    */
   quoted_currency?: string;
+
   /**
-   * 标的物是基准货币吗？
+   * Is the underlying asset the base currency?
    *
-   * 1 手对应 value_speed 数量的标的物，此标的物可以是基准货币或其他商品。
+   * One lot corresponds to the quantity of the underlying asset specified by value_speed, which can be the base currency or other commodities.
    *
-   * - 对于商品，包括现货和期货，此值通常为 false，因为 1 手对应着 value_speed 倍数的商品数量。
+   * - For commodities, including spot and futures, this value is usually false, because one lot corresponds to a multiple of value_speed of the commodity quantity.
    *
-   * - 对于外汇，此值通常为 true，因为 1 手对应着 value_speed 倍数的基础货币等值的任一货币。
+   * - For forex, this value is usually true, because one lot corresponds to a multiple of value_speed of the equivalent of the base currency in any currency.
    *
-   * 如果值为空，语义上等同于 false.
+   * If the value is empty, it is semantically equivalent to false.
    *
-   * 如果此值为 true，需要在标准收益公式中额外除以本品种的"平仓时的价格"。
+   * If this value is true, an additional division by the "closing price" of this product is required in the standard yield formula.
    */
   is_underlying_base_currency?: boolean;
-  /** 报价单位 */
-  price_step: number;
-  /** 成交量单位 (单位: 手) */
-  volume_step: number;
+
   /**
-   * 价值速率
-   *
-   * 1 手对应的标的物的数量
-   *
-   * ~~每做多 1 手，价格每上升 1，获得的结算资产收益~~
+   * price step, default is 1
    */
-  value_speed: number;
+  price_step?: number;
   /**
-   * 保证金率
+   * Volume unit (unit: lot), default is 1
+   */
+  volume_step?: number;
+  /**
+   * Value speed, default is 1
    *
-   * 保证金计算参考 [如何计算保证金](https://tradelife.feishu.cn/wiki/wikcnEVBM0RQ7pmbNZUxMV8viRg)
+   * The quantity of the underlying asset specified by one lot.
+   *
+   * ~~For every 1 lot increase in price, the settlement asset income obtained~~
+   */
+  value_speed?: number;
+
+  /**
+   * Margin rate
+   *
+   * Margin calculation reference [How to calculate margin](https://tradelife.feishu.cn/wiki/wikcnEVBM0RQ7pmbNZUxMV8viRg)
    */
   margin_rate?: number;
-  /** 基于价值的成本 */
+
+  /**
+   * Value-based cost
+   */
   value_based_cost?: number;
-  /** 基于成交量的成本 */
+  /**
+   * Volume-based cost
+   */
   volume_based_cost?: number;
-  /** 最大持仓量 */
+
+  /**
+   * Maximum position
+   */
   max_position?: number;
   /** 最大单笔委托量 */
   max_volume?: number;
-  /** 允许做多 */
+
+  /**
+   * Allow long
+   *
+   * If this value is empty, it is semantically equivalent to true.
+   */
   allow_long?: boolean;
-  /** 允许做空 */
+  /**
+   * Allow short
+   *
+   * If this value is empty, it is semantically equivalent to true.
+   */
   allow_short?: boolean;
-  /** 预期点差 */
+
+  /**
+   * Spread
+   */
   spread?: number;
 }
+
 /**
  * 订单类型
  * @public
  */
 declare enum OrderType {
   /**
-   * 市价单: 以市场价格成交
+   * Market Order: Executed at the current market price
    *
-   * 最普遍而简单的订单类型，不需要指定委托价
+   * The most common and simple order type, no need to specify an order price
    */
   MARKET = 0,
   /**
-   * 限价单: 限制成交的价格
+   * Limit Order: Limits the price at which the order can be executed
    *
-   * - BUY LIMIT: 成交价不会高于委托价
-   * - SELL LIMIT: 成交价不会低于委托价
+   * - BUY LIMIT: The execution price will not be higher than the order price
+   * - SELL LIMIT: The execution price will not be lower than the order price
    */
   LIMIT = 1,
   /**
-   * 触发单: 市场价达到委托价时触发市价单
+   * Stop Order: Triggers a market order when the market price reaches the order price
    *
-   * - BUY STOP: 市场价高于委托价时下单
-   * - SELL STOP: 市场价低于委托价时下单
+   * - BUY STOP: Place an order when the market price is higher than the order price
+   * - SELL STOP: Place an order when the market price is lower than the order price
    */
   STOP = 2,
   /**
-   * 即成或撤单: Fill or Kill
+   * Fill or Kill: Requires immediate and complete
    *
-   * 下单时要求立即全部成交，否则撤单
+   * It is required to be executed immediately and completely when placing an order, otherwise it will be cancelled
    */
   FOK = 3,
   /**
-   * 即成余撤单: Immediate or Cancel
+   * Immediate or Cancel: Requires immediate execution, allows partial execution, and cancels the rest
    *
-   * 下单时要求立即成交，允许部分成交，未成交的直接撤单
+   * It is required to be executed immediately when placing an order, allows partial execution, and cancels the rest
    */
   IOC = 4,
 }
+
 /**
  * 订单方向
  * @public
  */
 declare enum OrderDirection {
-  /** 开多 */
+  /**
+   * Open long position
+   */
   OPEN_LONG = 0,
-  /** 平多 */
+  /**
+   * Close long position
+   */
   CLOSE_LONG = 1,
-  /** 开空 */
+  /**
+   * Open short position
+   */
   OPEN_SHORT = 2,
-  /** 平空 */
+  /**
+   * Close short position
+   */
   CLOSE_SHORT = 3,
 }
 /**
@@ -354,52 +420,98 @@ declare enum OrderStatus {
   CANCELLED = 2,
 }
 
-// 基础 Hook
-/** 使用变量的引用，在所有的执行阶段保持对同一个值的引用，类似 React.useRef */
+// Basic Hooks
+/**
+ * Use a reference to a variable to maintain a reference to the same value in all execution stages, similar to React.useRef
+ *
+ * @param initial_value - The initial value of the reference
+ * @returns An object with a `current` property that holds the reference to the value
+ */
 declare const useRef: <T>(initial_value: T) => { current: T };
-/** 使用副作用，当两次调用的 deps 不同时，fn 会被重新调用，类似 React.useEffect */
+/**
+ * Use a side effect. When the dependencies of two consecutive calls are different, `fn` will be called again, similar to React.useEffect
+ *
+ * @param fn - The function to be called as a side effect
+ * @param deps - An array of dependencies that trigger the side effect when changed
+ */
 declare const useEffect: (fn: () => (() => void) | void, deps?: any[]) => void;
-/** 缓存计算，类似 React.useMemo */
+/**
+ * Cache a calculation, similar to React.useMemo
+ *
+ * @param fn - The function to be cached
+ * @param deps - An array of dependencies that trigger the recalculation of the cached value when changed
+ * @returns The cached value
+ */
 declare const useMemo: <T>(fn: () => T, deps: any[]) => T;
-/** 使用状态，类似 React.useState */
+/**
+ * Use a state, similar to React.useState
+ *
+ * @param initState - The initial state value
+ * @returns A tuple with the current state value and a function to update the state
+ */
 declare const useState: <T>(initState: T) => [T, (v: T) => void];
-/** 缓存计算，类似 useMemo，但是会异步阻塞后续的流程 */
+/**
+ * Cache a calculation asynchronously, similar to useMemo, but blocks subsequent processes asynchronously
+ *
+ * @param fn - The function to be cached
+ * @param deps - An array of dependencies that trigger the recalculation of the cached value when changed
+ * @returns A promise that resolves to the cached value
+ */
 declare const useMemoAsync: <T>(
   fn: () => Promise<T>,
   deps?: any[] | undefined
 ) => Promise<T>;
-// 基本参数
-/** 使用应用参数 (数字) */
+
+// Basic parameters
+/**
+ * Use an application parameter (number)
+ *
+ * @param key - The key of the parameter
+ * @param defaultValue - The default value of the parameter
+ * @returns The value of the parameter
+ */
 declare const useParamNumber: (key: string, defaultValue?: number) => number;
-/** 使用应用参数 (布尔) */
+/**
+ * Use an application parameter (boolean)
+ *
+ * @param key - The key of the parameter
+ * @param defaultValue - The default value of the parameter
+ * @returns The value of the parameter
+ */
 declare const useParamBoolean: (key: string, defaultValue?: boolean) => boolean;
-/** 使用应用参数 (字符串) */
+/**
+ * Use an application parameter (string)
+ *
+ * @param key - The key of the parameter
+ * @param defaultValue - The default value of the parameter
+ * @returns The value of the parameter
+ */
 declare const useParamString: (key: string, defaultValue?: string) => string;
 
-// 序列 Hook
-/** 序列是一个 number[], 具有一些额外的字段 */
+// Series Hook
+/** A series is a number[] with some additional fields */
 declare class Series extends Array<number> {
   series_id: string;
   name: string | undefined;
   tags: Record<string, any>;
   parent: Series | undefined;
 }
-/** 使用序列 */
+/** Use a series */
 declare const useSeries: (
   name: string,
   parent: Series | undefined,
   tags?: Record<string, any>
 ) => Series;
 
-// 业务类 Hook
-/** 使用品种信息 */
+// Business class Hook
+/** Use product information */
 declare const useProduct: (
   datasource_id: string,
   product_id: string
 ) => IProduct;
-/** 使用品种参数 */
+/** Use product parameters */
 declare const useParamProduct: (key: string) => IProduct;
-/** 使用周期数据 \`[idx, timestamp_in_us, open, high, low, close, volume]\` */
+/** Use OHLC data `[idx, timestamp_in_us, open, high, low, close, volume]` */
 declare const useOHLC: (
   datasource_id: string,
   product_id: string,
@@ -412,16 +524,16 @@ declare const useOHLC: (
   close: Series;
   volume: Series;
 };
-/** 使用 OHLC 数据 */
+/** Use OHLC data */
 declare const useParamOHLC: (key: string) => ReturnType<typeof useOHLC> & {
   datasource_id: string;
   product_id: string;
   period_in_sec: number;
 };
-/** 使用账户信息 */
+/** Use Account Info */
 declare const useAccountInfo: () => IAccountInfo;
 /**
- * 使用指定品种和指定方向的头寸管理器
+ * Use a position manager for a specified product and direction
  */
 declare const useSinglePosition: (
   product_id: string,
@@ -435,20 +547,113 @@ declare const useSinglePosition: (
   setStopLossPrice: (v: number) => void;
 } & IPosition;
 
-/** 使用交易所 */
+/** Use Exchange */
 declare const useExchange: () => {
-  /** 列出未成交的订单列表 */
+  /** List of unfilled orders */
   listOrders: () => IOrder[];
-  /** 提交订单 */
+  /** Submit orders */
   submitOrder: (...orders: IOrder[]) => void;
-  /** 取消订单 */
+  /** Cancel orders */
   cancelOrder: (...orderIds: string[]) => void;
 };
 
-// 辅助类 Hook
-/** 使用日志函数 */
+// Utility Hooks
+/** Use a logging function */
 declare const useLog: () => (...params: any[]) => void;
-/** 使用记录表 */
+/** Use a record table */
 declare const useRecordTable: <T extends Record<string, any>>(
   title: string
 ) => T[];
+
+// Deployment script context
+/**
+ * Deployment specification: uniquely identifies a deployment by specifying this value
+ * @public
+ */
+declare interface IDeploySpec {
+  /**
+   * The image tag used for deployment
+   */
+  version?: string;
+  /**
+   * The package to be deployed, e.g. \@yuants/hv
+   */
+  package: string;
+  /**
+   * Environment variables
+   */
+  env?: Record<string, string>;
+  /**
+   * Annotations, which can add some metadata to it
+   * e.g. can be used to generate some non-standard resources in the corresponding vendor interpretation
+   * Reference: https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/
+   */
+  annotations?: Record<string, string>;
+  /**
+   * Network configuration
+   */
+  network?: {
+    /**
+     * Port forwarding, reference: https://docs.docker.com/config/containers/container-networking/#published-ports
+     * Generally, when starting a container, we need to specify [container internal port name]:[container external port]
+     * However, here we only specify which port to expose, that is, [container external port], and bind it with the container internal port through a unique semantic name
+     * The reason is that only the package can define which port needs to be exposed, and the deployer only defines which port to forward to
+     * e.g. vnc -\> 5900, hv -\> 8888
+     */
+    port_forward?: Record<string, number>;
+    /**
+     * Reverse proxy,
+     * e.g. hv: y.ntnl.io/hv
+     */
+    backward_proxy?: Record<string, string>;
+  };
+  /**
+   * File system configuration
+   * The format is [container internal Volume name]:[container external URI]
+   *
+   * e.g. config-file1 -\> file://path/to/file
+   *      config-file2 -\> s3://bucket_url
+   *      config-file3 -\> yuan-workspace://some/path
+   */
+  filesystem?: Record<string, string>;
+  /**
+   * CPU resource claim, leaving it blank means using the default value in the package
+   */
+  cpu?: IResourceClaim;
+  /**
+   * Memory resource claim, leaving it blank means using the default value in the package
+   */
+  memory?: IResourceClaim;
+
+  /**
+   * Inline JSON data, could be used as a configuration file
+   *
+   * should be serializable
+   */
+  one_json?: any;
+}
+
+/**
+ * Resource claim definition, format reference: https://kubernetes.io/docs/reference/kubernetes-api/common-definitions/quantity/
+ * @public
+ */
+declare interface IResourceClaim {
+  /** required */
+  min?: string;
+  /** limited */
+  max?: string;
+}
+
+/**
+ * Deployment configuration context
+ */
+declare interface IDeployContext {
+  /**
+   * bundleCode bundles the entry into IIFE format code
+   * @param entry Entry file path
+   * @returns IIFE format code
+   */
+  bundleCode: (entry: string) => Promise<string>;
+}
+
+declare const DeployContext: IDeployContext;
