@@ -12,7 +12,9 @@ export const useSUM = (source: Series, period: number) =>
     source,
     {},
     (i, SUM) =>
-      source[i] +
+      // ISSUE: SUM may keep outputting NaN if source has NaN values
+      // => use fallback to prevent source[i], source[i - period] is NaN
+      (source[i] || 0) +
       (i > 0 ? SUM[i - 1] : 0) -
-      (i - period >= 0 ? source[i - period] : 0)
+      (i - period >= 0 ? source[i - period] || 0 : 0)
   );
