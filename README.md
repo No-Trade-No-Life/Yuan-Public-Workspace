@@ -1,6 +1,6 @@
 # Yuan-Public-Workspace
 
-the Public Workspace for AI / Human learning
+The public workspace for AI / Human learning.
 
 ## Contributors
 
