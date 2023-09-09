@@ -1,13 +1,8 @@
-// 海龟交易法，朴素做多版本
-// 模型编写思路：
-// 1. 使用已有指标 useMAX 和 useMIN 计算最高价和最低价
-// 2. 使用 useSinglePosition 创建单头寸
-// 3. 在 useEffect 中根据条件执行开仓、止盈和加仓操作
-// 4. 根据用户输入的条件设置开仓、止盈和加仓的触发条件和止损位
+// 海龟交易法，做多版本
 // 当价格突破20日价格的最高价的时候，开仓做多
 // 开仓后，当多头头寸在突破过去10日最低价处止盈离市。
 // 开仓后，当市价继续向盈利方向突破1/2 ATR时加仓，止损位为2ATR, 每加仓一次，止损位就提高1/2 ATR
-import { useMAX, useMIN, useSeriesMap, useATR } from "@libs";
+import { useMAX, useMIN, useATR } from "@libs";
 
 export default () => {
   const { product_id, high, low, close } = useParamOHLC("SomeKey");
