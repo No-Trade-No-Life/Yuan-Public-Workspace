@@ -5,7 +5,8 @@
 // 上轨为上一根K线的(close+open)/2 + A * atr
 // 下轨为上一根K线的(close+open)/2 - A * atr
 // 当价格上穿到上轨时，进入突破模式，当下穿上轨时，进入下跌模式
-import { useATR } from "@libs";
+// 并画出上轨和下轨
+import { useATR, useSeriesMap } from "@libs";
 
 export default () => {
   const { product_id, close, open, high, low } = useParamOHLC("SomeKey");
@@ -15,21 +16,29 @@ export default () => {
   const idx = close.length - 2;
   const pL = useSinglePosition(product_id, PositionVariant.LONG);
   const pS = useSinglePosition(product_id, PositionVariant.SHORT);
-
+  const prevClose = (close[idx] + open[idx]) / 2;
+  const upper = useSeriesMap(
+    "Upper",
+    close,
+    { display: "line" },
+    (i) => prevClose + A * atr[i]
+  );
+  const lower = useSeriesMap(
+    "Lower",
+    close,
+    { display: "line" },
+    (i) => prevClose - A * atr[i]
+  );
   useEffect(() => {
     if (idx < 1) return;
 
-    const prevClose = (close[idx] + open[idx]) / 2;
-    const prevUpper = prevClose + A * atr[idx];
-    const prevLower = prevClose - A * atr[idx];
-
-    if (close[idx] > prevUpper) {
+    if (close[idx] > upper[idx]) {
       // 进入突破模式，做多
       pL.setTargetVolume(1);
       pS.setTargetVolume(0);
     }
 
-    if (close[idx] < prevLower) {
+    if (close[idx] < lower[idx]) {
       // 进入下跌模式，做空
       pL.setTargetVolume(0);
       pS.setTargetVolume(1);
