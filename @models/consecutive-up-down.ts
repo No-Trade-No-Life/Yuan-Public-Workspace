@@ -7,7 +7,7 @@ import { useSeriesMap } from "@libs";
 
 export default () => {
   const { product_id, close } = useParamOHLC("SomeKey");
-  const idx = close.length - 1;
+  const idx = close.length - 2;
   const X = useParamNumber("X", 3);
   const Y = useParamNumber("Y", 5);
 

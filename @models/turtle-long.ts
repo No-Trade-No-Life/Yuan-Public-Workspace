@@ -13,17 +13,16 @@ export default () => {
 
   const pL = useSinglePosition(product_id, PositionVariant.LONG);
 
+  let price_break = useRef(0);
   useEffect(() => {
-    const idx = close.length - 1;
-    let price_break = 0;
+    const idx = close.length - 2;
     if (idx < N) return;
     const atr = useATR(high, low, close, 14);
     const atrValue = atr[idx];
 
-    // 当价格突破20日价格的最高价时，开仓做多，同时记录当前价格
-    if (close[idx] > HH[idx - 1]) {
-      price_break = close[idx];
-
+    // 当价格突破20日价格的最高价时，首次开仓做多，同时记录当前价格
+    if (close[idx] > HH[idx - 1] && pL.volume === 0) {
+      price_break.current = close[idx];
       pL.setTargetVolume(1);
     }
 
@@ -31,12 +30,12 @@ export default () => {
     if (pL.volume > 0 && close[idx] < LL[idx - 10]) {
       pL.setTargetVolume(0);
     }
-    //
+
     // 当市价继续向盈利方向突破1/2 atr时加仓，止损位为2*atr
-    if (pL.volume > 0 && close[idx] > price_break + 0.5 * atrValue) {
+    if (pL.volume > 0 && close[idx] > price_break.current + 0.5 * atrValue) {
       pL.setTargetVolume(pL.volume + 1);
-      pL.setStopLossPrice(price_break - 2 * atrValue);
-      price_break = close[idx];
+      pL.setStopLossPrice(price_break.current - 2 * atrValue);
+      price_break.current = close[idx];
     }
   }, [close.length]);
 };

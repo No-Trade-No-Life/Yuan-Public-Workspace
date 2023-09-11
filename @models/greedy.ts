@@ -3,7 +3,7 @@
 // 开仓后，只要蜡烛的颜色与开仓一致，就会继续向同一方向填单。如果当前仓位是多头，将为每个后续的绿色蜡烛创建新的多头订单，反之亦然。这将继续进行，直到出现不同颜色的蜡烛
 export default () => {
   const { product_id, open, high, low } = useParamOHLC("SomeKey");
-  const idx = open.length - 1;
+  const idx = open.length - 2;
 
   const prevHigh = high[idx - 1];
   const prevLow = low[idx - 1];
