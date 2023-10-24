@@ -531,13 +531,14 @@ declare const useParamOHLC: (key: string) => ReturnType<typeof useOHLC> & {
   period_in_sec: number;
 };
 /** Use Account Info */
-declare const useAccountInfo: () => IAccountInfo;
+declare const useAccountInfo: (account_id?: string) => IAccountInfo;
 /**
  * Use a position manager for a specified product and direction
  */
 declare const useSinglePosition: (
   product_id: string,
-  variant: PositionVariant
+  variant: PositionVariant,
+  account_id?: string
 ) => {
   targetVolume: number;
   takeProfitPrice: number;
@@ -564,6 +565,10 @@ declare const useLog: () => (...params: any[]) => void;
 declare const useRecordTable: <T extends Record<string, any>>(
   title: string
 ) => T[];
+/** Get Time String */
+declare const formatTime: (timestamp: number) => string;
+/** Generate a UUID (Universal-Unique-ID) */
+declare const UUID: () => string;
 
 // Deployment script context
 /**

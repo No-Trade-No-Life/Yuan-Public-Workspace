@@ -1,7 +1,7 @@
 // 双均线策略 (Double Moving Average)
 // 当短期均线由下向上穿越长期均线时做多 (金叉)
 // 当短期均线由上向下穿越长期均线时做空 (死叉)
-import { useSMA } from "@libs";
+import { useCounterParty, useSMA } from "@libs";
 
 export default () => {
   // 使用收盘价序列
@@ -12,6 +12,8 @@ export default () => {
   // 使用 20，60 均线
   const sma20 = useSMA(close, 20);
   const sma60 = useSMA(close, 60);
+
+  const accountInfo = useAccountInfo();
 
   // 设置仓位管理器
   const pL = useSinglePosition(product_id, PositionVariant.LONG);
@@ -30,4 +32,5 @@ export default () => {
       pS.setTargetVolume(1);
     }
   }, [idx]);
+  useCounterParty(accountInfo.account_id);
 };
