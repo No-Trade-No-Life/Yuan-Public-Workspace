@@ -28,7 +28,7 @@ export const useStopLossOnSingleProduct = (
     for (const order of stopLossOrders.current.values()) {
       const theOrder = ex.getOrderById(order.client_order_id);
       if (!theOrder) {
-        log("触发止损");
+        log("Triggered StopLoss Event");
         hasStopped.current = true;
         stopLossOrders.current.clear();
         const currentVolume = src.positions.reduce(
@@ -56,7 +56,7 @@ export const useStopLossOnSingleProduct = (
       0
     );
     if (currentVolume === 0 || currentVolume * stopLossVolume.current < 0) {
-      log("恢复跟单");
+      log("Resume following");
       hasStopped.current = false;
       stopLossVolume.current = NaN;
       // follow the positions
@@ -108,7 +108,6 @@ export const useStopLossOnSingleProduct = (
         mapProductIdVariantToClosePrice[
           `${position.product_id}${position.variant}`
         ];
-      //   log("止损价格", closePrice);
       if (Number.isNaN(closePrice)) {
         continue;
       }
@@ -135,10 +134,6 @@ export const useStopLossOnSingleProduct = (
       stopLossOrders.current.clear();
     };
   });
-
-  useEffect(() => {
-    debugger;
-  }, []);
 
   // close all positions if stop loss
   useEffect(() => {
