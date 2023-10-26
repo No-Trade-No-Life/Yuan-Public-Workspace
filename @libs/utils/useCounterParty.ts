@@ -4,8 +4,13 @@
  * The derived account has the same positions as the source account, but the positions' direction is reversed.
  */
 export function useCounterParty(source_account_id: string) {
-  const src = useAccountInfo(source_account_id);
-  const tar = useAccountInfo(`${source_account_id}-CP`);
+  const src = useAccountInfo({ account_id: source_account_id });
+  const tar = useAccountInfo({
+    account_id: `${source_account_id}-CP`,
+    currency: src.money.currency,
+    leverage: src.money.leverage,
+  });
+
   const ex = useExchange();
   useEffect(() => {
     const orders: IOrder[] = [];

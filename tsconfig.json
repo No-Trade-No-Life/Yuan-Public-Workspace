@@ -2,7 +2,7 @@
   "compilerOptions": {
     "rootDir": ".",
     "baseUrl": ".",
-
+    "downlevelIteration": true,
     "types": ["./global.d.ts"],
     "lib": ["ESNext"],
     "noEmit": true,
