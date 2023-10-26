@@ -531,7 +531,12 @@ declare const useParamOHLC: (key: string) => ReturnType<typeof useOHLC> & {
   period_in_sec: number;
 };
 /** Use Account Info */
-declare const useAccountInfo: (account_id?: string) => IAccountInfo;
+declare const useAccountInfo: (options?: {
+  account_id?: string;
+  currency?: string;
+  leverage?: number;
+  initial_balance?: number;
+}) => IAccountInfo;
 /**
  * Use a position manager for a specified product and direction
  */
@@ -550,6 +555,10 @@ declare const useSinglePosition: (
 
 /** Use Exchange */
 declare const useExchange: () => {
+  /** Get Quote of Product */
+  getQuote: (product_id: string) => { ask: number; bid: number };
+  /** Get Order by Order ID */
+  getOrderById: (id: string) => IOrder | undefined;
   /** List of unfilled orders */
   listOrders: () => IOrder[];
   /** Submit orders */

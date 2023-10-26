@@ -5,10 +5,10 @@ import { ChinaFutureOHLCKeys } from "@libs";
 export default function* () {
   for (const SomeKey of ChinaFutureOHLCKeys) {
     yield {
+      // kernel_id 用以区分不同的回测结果
+      kernel_id: `Model-2MA-${SomeKey}`,
       // 模型代码入口
       entry: "/@models/double-ma.ts",
-      // account_id 用以区分不同的回测结果
-      account_id: `Model-2MA-${SomeKey}`,
       // 模型参数
       agent_params: {
         SomeKey,
