@@ -12,7 +12,7 @@ export default () => {
   const LL = useMIN(low, N);
 
   const pL = useSinglePosition(product_id, PositionVariant.LONG);
-  const atr = useATR(high, low, close, 14);
+  const { ATR: atr } = useATR(high, low, close, 14);
   const price_break = useRef(0);
   useEffect(() => {
     const idx = close.length - 2;

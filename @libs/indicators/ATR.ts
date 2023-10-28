@@ -28,5 +28,5 @@ export const useATR = (
     ATR.tags.display = "line";
     ATR.tags.chart = "new";
   }, []);
-  return ATR;
+  return { ATR, TR };
 };
