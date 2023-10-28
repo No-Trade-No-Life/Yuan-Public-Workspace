@@ -11,7 +11,7 @@ import { useATR, useSeriesMap } from "@libs";
 export default () => {
   const { product_id, close, open, high, low } = useParamOHLC("SomeKey");
   const A = useParamNumber("A", 2);
-  const atr = useATR(high, low, close, 14);
+  const { ATR: atr } = useATR(high, low, close, 14);
 
   const idx = close.length - 2;
   const pL = useSinglePosition(product_id, PositionVariant.LONG);
