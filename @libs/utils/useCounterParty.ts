@@ -20,6 +20,12 @@ export function useCounterParty(source_account_id: string) {
           ...order,
           account_id: tar.account_id,
           client_order_id: UUID(),
+          type:
+            order.type === OrderType.STOP
+              ? OrderType.LIMIT
+              : order.type === OrderType.LIMIT
+              ? OrderType.STOP
+              : order.type,
           direction:
             order.direction === OrderDirection.OPEN_LONG
               ? OrderDirection.OPEN_SHORT
