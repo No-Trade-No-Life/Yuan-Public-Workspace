@@ -1,5 +1,5 @@
 // 使用了 HP Filter 的双均线策略
-import { useHPFilter, useSMA } from "@libs";
+import { useHPFilter, useSMA, useSimplePositionManager } from "@libs";
 
 export default () => {
   const { product_id, close } = useParamOHLC("SomeKey"); // 使用收盘价序列
@@ -14,20 +14,21 @@ export default () => {
   const sma60 = useSMA(hp, 60);
 
   // 设置仓位管理器
-  const pL = useSinglePosition(product_id, PositionVariant.LONG);
-  const pS = useSinglePosition(product_id, PositionVariant.SHORT);
+  const accountInfo = useAccountInfo();
+  const [targetVolume, setTargetVolume] = useSimplePositionManager(
+    accountInfo.account_id,
+    product_id
+  );
 
   useEffect(() => {
     if (idx < 60) return; // 略过一开始不成熟的均线数据
     // 金叉开多平空
     if (sma20[idx] > sma60[idx]) {
-      pL.setTargetVolume(1);
-      pS.setTargetVolume(0);
+      setTargetVolume(1);
     }
     // 死叉开空平多
     if (sma20[idx] < sma60[idx]) {
-      pL.setTargetVolume(0);
-      pS.setTargetVolume(1);
+      setTargetVolume(-1);
     }
   }, [idx]);
 };

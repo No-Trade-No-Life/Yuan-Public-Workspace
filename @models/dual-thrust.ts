@@ -1,7 +1,7 @@
 // Dual Thrust 策略
 // 收盘价突破上轨，做多
 // 收盘价突破下轨，做空
-import { useMAX, useMIN } from "@libs";
+import { useMAX, useMIN, useSimplePositionManager } from "@libs";
 
 export default () => {
   const { product_id, open, high, low, close } = useParamOHLC("SomeKey");
@@ -37,19 +37,20 @@ export default () => {
   // NOTE: 使用当前 K 线的上一根 K 线的收盘价，保证策略在 K 线结束时才会执行
   const idx = close.length - 2;
   // 设置仓位管理器
-  const pL = useSinglePosition(product_id, PositionVariant.LONG);
-  const pS = useSinglePosition(product_id, PositionVariant.SHORT);
+  const accountInfo = useAccountInfo();
+  const [targetVolume, setTargetVolume] = useSimplePositionManager(
+    accountInfo.account_id,
+    product_id
+  );
 
   useEffect(() => {
     if (idx < N) return; // 略过一开始不成熟的均线数据
 
     if (close[idx] > Upper[idx]) {
-      pL.setTargetVolume(1);
-      pS.setTargetVolume(0);
+      setTargetVolume(1);
     }
     if (close[idx] < Lower[idx]) {
-      pL.setTargetVolume(0);
-      pS.setTargetVolume(1);
+      setTargetVolume(-1);
     }
   }, [idx]);
 };

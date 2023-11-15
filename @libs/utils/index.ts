@@ -4,6 +4,7 @@ export * from "./useCounterParty";
 export * from "./useDelay";
 export * from "./usePositionLimit";
 export * from "./useSeriesMap";
+export * from "./useSimplePositionManager";
 export * from "./useStopLossOnSingleProduct";
 export * from "./useThrottle";
 export * from "./useTopK";
