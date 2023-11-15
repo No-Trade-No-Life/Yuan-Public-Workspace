@@ -1,5 +1,3 @@
-import { mergePositions } from "./mergePositions";
-
 /**
  * Derive a PositionLimit account from the source account.
  *
