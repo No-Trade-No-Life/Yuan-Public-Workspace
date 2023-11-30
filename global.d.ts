@@ -511,11 +511,16 @@ declare const useProduct: (
 ) => IProduct;
 /** Use product parameters */
 declare const useParamProduct: (key: string) => IProduct;
-/** Use OHLC data `[idx, timestamp_in_us, open, high, low, close, volume]` */
+/**
+ * Use OHLC Period Data
+ * @param datasource_id - Data source ID
+ * @param product_id - Product ID
+ * @param period - Period in seconds or RFC3339 duration format
+ */
 declare const useOHLC: (
   datasource_id: string,
   product_id: string,
-  period_in_sec: number
+  period: number | string
 ) => {
   time: Series;
   open: Series;
