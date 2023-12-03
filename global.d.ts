@@ -583,6 +583,25 @@ declare const useRecordTable: <T extends Record<string, any>>(
 declare const formatTime: (timestamp: number) => string;
 /** Generate a UUID (Universal-Unique-ID) */
 declare const UUID: () => string;
+declare const roundToStep: (
+  value: number,
+  step: number,
+  roundFn?: ((x: number) => number) | undefined
+) => number;
+declare const getProfit: (
+  product: IProduct,
+  openPrice: number,
+  closePrice: number,
+  volume: number,
+  variant: string,
+  currency: string,
+  quotes: (product_id: string) =>
+    | {
+        ask: number;
+        bid: number;
+      }
+    | undefined
+) => number;
 
 // Deployment script context
 /**
