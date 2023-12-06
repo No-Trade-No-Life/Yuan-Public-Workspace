@@ -14,6 +14,10 @@ export const useRSI = (source: Series, period = 14) => {
   );
   const EMA_U = useEMA(U, period);
   const EMA_D = useEMA(D, period);
+  useEffect(() => {
+    EMA_U.tags.display = "none";
+    EMA_D.tags.display = "none";
+  }, []);
   const RSI = useSeriesMap(
     `RSI(${source.name},${period})`,
     source,

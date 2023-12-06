@@ -36,6 +36,7 @@ export * from "./indicators/MACD";
 export * from "./indicators/MAX";
 export * from "./indicators/MIN";
 export * from "./indicators/NVI";
+export * from "./indicators/OBV";
 export * from "./indicators/PROD";
 export * from "./indicators/RANGE";
 export * from "./indicators/RANK";
