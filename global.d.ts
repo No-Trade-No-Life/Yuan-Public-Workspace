@@ -464,11 +464,21 @@ declare const useMemoAsync: <T>(
 
 // Basic parameters
 /**
+ * Use an JSON Schema parameter
+ *
+ * @param key - The key of the parameter
+ * @param schema - The JSON Schema for the parameter
+ * @returns The value of the parameter
+ * @see https://json-schema.org/ for JSON Schema Specification
+ */
+declare const useParamSchema: <T>(key: string, schema: any) => T;
+/**
  * Use an application parameter (number)
  *
  * @param key - The key of the parameter
  * @param defaultValue - The default value of the parameter
  * @returns The value of the parameter
+ * @deprecated import from "@libs" instead
  */
 declare const useParamNumber: (key: string, defaultValue?: number) => number;
 /**
@@ -477,6 +487,7 @@ declare const useParamNumber: (key: string, defaultValue?: number) => number;
  * @param key - The key of the parameter
  * @param defaultValue - The default value of the parameter
  * @returns The value of the parameter
+ * @deprecated import from "@libs" instead
  */
 declare const useParamBoolean: (key: string, defaultValue?: boolean) => boolean;
 /**
@@ -485,6 +496,7 @@ declare const useParamBoolean: (key: string, defaultValue?: boolean) => boolean;
  * @param key - The key of the parameter
  * @param defaultValue - The default value of the parameter
  * @returns The value of the parameter
+ * @deprecated import from "@libs" instead
  */
 declare const useParamString: (key: string, defaultValue?: string) => string;
 

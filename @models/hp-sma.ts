@@ -1,5 +1,10 @@
 // 使用了 HP Filter 的双均线策略
-import { useHPFilter, useSMA, useSimplePositionManager } from "@libs";
+import {
+  useHPFilter,
+  useParamNumber,
+  useSMA,
+  useSimplePositionManager,
+} from "@libs";
 
 export default () => {
   const { product_id, close } = useParamOHLC("SomeKey"); // 使用收盘价序列

@@ -6,7 +6,7 @@
 // 下轨为上一根K线的(close+open)/2 - A * atr
 // 当价格上穿到上轨时，进入突破模式，当下穿上轨时，进入下跌模式
 // 并画出上轨和下轨
-import { useATR, useSeriesMap } from "@libs";
+import { useATR, useParamNumber, useSeriesMap } from "@libs";
 
 export default () => {
   const { product_id, close, open, high, low } = useParamOHLC("SomeKey");

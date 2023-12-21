@@ -1,3 +1,4 @@
+import { useParamNumber, useParamString } from "@libs";
 // 单向做多等差网格交易策略
 export default () => {
   const datasource_id = useParamString("数据源", "Y");
