@@ -5,6 +5,7 @@ import {
   useMAX,
   useMIN,
   useParamNumber,
+  useParamOHLC,
   useSimplePositionManager,
 } from "@libs";
 

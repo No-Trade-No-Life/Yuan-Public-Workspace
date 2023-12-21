@@ -1,6 +1,6 @@
 // R-Breaker 策略
 // 高低周期的回转策略，根据高周期计算几个枢轴价位，然后在低周期上进行交易
-
+import { useParamOHLC, useSinglePosition } from "@libs";
 export default () => {
   // 设定参数
   const { product_id, close: C } = useParamOHLC("低周期"); // e.g. 1min
