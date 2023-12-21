@@ -472,33 +472,6 @@ declare const useMemoAsync: <T>(
  * @see https://json-schema.org/ for JSON Schema Specification
  */
 declare const useParamSchema: <T>(key: string, schema: any) => T;
-/**
- * Use an application parameter (number)
- *
- * @param key - The key of the parameter
- * @param defaultValue - The default value of the parameter
- * @returns The value of the parameter
- * @deprecated import from "@libs" instead
- */
-declare const useParamNumber: (key: string, defaultValue?: number) => number;
-/**
- * Use an application parameter (boolean)
- *
- * @param key - The key of the parameter
- * @param defaultValue - The default value of the parameter
- * @returns The value of the parameter
- * @deprecated import from "@libs" instead
- */
-declare const useParamBoolean: (key: string, defaultValue?: boolean) => boolean;
-/**
- * Use an application parameter (string)
- *
- * @param key - The key of the parameter
- * @param defaultValue - The default value of the parameter
- * @returns The value of the parameter
- * @deprecated import from "@libs" instead
- */
-declare const useParamString: (key: string, defaultValue?: string) => string;
 
 // Series Hook
 /** A series is a number[] with some additional fields */
@@ -521,8 +494,7 @@ declare const useProduct: (
   datasource_id: string,
   product_id: string
 ) => IProduct;
-/** Use product parameters */
-declare const useParamProduct: (key: string) => IProduct;
+
 /**
  * Use OHLC Period Data
  * @param datasource_id - Data source ID
@@ -541,12 +513,7 @@ declare const useOHLC: (
   close: Series;
   volume: Series;
 };
-/** Use OHLC data */
-declare const useParamOHLC: (key: string) => ReturnType<typeof useOHLC> & {
-  datasource_id: string;
-  product_id: string;
-  period_in_sec: number;
-};
+
 /** Use Account Info */
 declare const useAccountInfo: (options?: {
   account_id?: string;
@@ -554,21 +521,6 @@ declare const useAccountInfo: (options?: {
   leverage?: number;
   initial_balance?: number;
 }) => IAccountInfo;
-/**
- * Use a position manager for a specified product and direction
- */
-declare const useSinglePosition: (
-  product_id: string,
-  variant: PositionVariant,
-  account_id?: string
-) => {
-  targetVolume: number;
-  takeProfitPrice: number;
-  stopLossPrice: number;
-  setTargetVolume: (v: number) => void;
-  setTakeProfitPrice: (v: number) => void;
-  setStopLossPrice: (v: number) => void;
-} & IPosition;
 
 /** Use Exchange */
 declare const useExchange: () => {
@@ -600,6 +552,22 @@ declare const roundToStep: (
   step: number,
   roundFn?: ((x: number) => number) | undefined
 ) => number;
+
+/**
+ * convert params to path.
+ * Path is splitted by `/`.
+ * Escape to `\/` if a param including `/`.
+ */
+declare const encodePath: (...params: any[]) => string;
+
+/**
+ * convert path to params.
+ * Path is splitted by `/`.
+ * Escape to `\/` if a param including `/`.
+ * @public
+ */
+declare const decodePath: (path: string) => string[];
+
 declare const getProfit: (
   product: IProduct,
   openPrice: number,

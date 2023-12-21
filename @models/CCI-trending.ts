@@ -1,4 +1,10 @@
-import { useATR, useCCI, useRef, useSimplePositionManager } from "@libs";
+import {
+  useATR,
+  useCCI,
+  useParamOHLC,
+  useRef,
+  useSimplePositionManager,
+} from "@libs";
 
 /**
  * CCI 顺势交易策略

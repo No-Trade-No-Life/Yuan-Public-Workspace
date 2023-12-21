@@ -8,6 +8,7 @@ import {
   useMAX,
   useMIN,
   useParamNumber,
+  useParamOHLC,
   useRuleEffect,
   useSeriesMap,
   useSinglePosition,

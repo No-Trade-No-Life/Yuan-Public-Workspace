@@ -2,6 +2,7 @@
 import {
   useHPFilter,
   useParamNumber,
+  useParamOHLC,
   useSMA,
   useSimplePositionManager,
 } from "@libs";
