@@ -11,20 +11,20 @@ export default () => {
   const flag = useRef(0);
 
   useEffect(() => {
-    const idx = open.length - 1;
-    const prevHigh = high[idx - 1];
-    const prevLow = low[idx - 1];
-    if (idx < 1) return;
+    const currentIndex = open.currentIndex;
+    const prevHigh = high.previousValue;
+    const prevLow = low.previousValue;
+    if (currentIndex < 1) return;
     const netVolume = pL.volume - pS.volume;
 
     if (netVolume === 0) {
-      if (open[idx] > prevHigh) {
+      if (open.currentValue > prevHigh) {
         if (pL.volume === 0) {
           flag.current = 1;
           pL.setTargetVolume(1);
         }
       }
-      if (open[idx] < prevLow) {
+      if (open.currentValue < prevLow) {
         if (pS.volume === 0) {
           flag.current = 1;
           pS.setTargetVolume(1);
@@ -35,26 +35,32 @@ export default () => {
     //做多方向
     if (netVolume > 0) {
       //如果上一根
-      if (close[idx - 1] > open[idx - 1] && flag.current == 1) {
+      if (close.previousValue > open.previousValue && flag.current == 1) {
         pL.setTargetVolume(pL.volume + 1);
       } else {
         flag.current = 0;
       }
 
       const price = pL.position_price;
-      if (price < open[idx] * 0.995 || price > open[idx] * 1.005) {
+      if (
+        price < open.currentValue * 0.995 ||
+        price > open.currentValue * 1.005
+      ) {
         pL.setTargetVolume(0);
       }
     }
     //做空方向
     if (netVolume < 0) {
-      if (close[idx - 1] < open[idx - 1] && flag.current == 1) {
+      if (close.previousValue < open.previousValue && flag.current == 1) {
         pS.setTargetVolume(pS.volume + 1);
       } else {
         flag.current = 0;
       }
       const price = pS.position_price;
-      if (price < open[idx] * 0.995 || price > open[idx] * 1.005) {
+      if (
+        price < open.currentValue * 0.995 ||
+        price > open.currentValue * 1.005
+      ) {
         pS.setTargetVolume(0);
       }
     }

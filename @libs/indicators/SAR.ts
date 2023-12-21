@@ -22,72 +22,76 @@ export const useSAR = (
   const direction = useSeries("direction", high); // 1 for upward, -1 for downward, 0 for unknown
 
   useEffect(() => {
-    const i = high.length - 1;
+    const i = high.currentIndex;
     if (i < 0) return;
 
     if (i === 0) {
-      MAX[i] = high[i];
-      MIN[i] = low[i];
+      MAX[i] = high.currentValue;
+      MIN[i] = low.currentValue;
       AF[i] = start;
-      U[i] = high[i];
-      D[i] = low[i];
+      U[i] = high.currentValue;
+      D[i] = low.currentValue;
       direction[i] = 0;
       return;
     }
     // U[i] = U[i - 1];
     // D[i] = D[i - 1];
 
-    if (direction[i - 1] !== 1) {
+    if (direction.previousValue !== 1) {
       // 按下行处理
 
       // 检查是否向上反转
-      if (high[i] >= U[i - 1]) {
+      if (high.currentValue >= U.previousValue) {
         direction[i] = 1;
-        MAX[i] = high[i];
-        MIN[i] = low[i];
+        MAX[i] = high.currentValue;
+        MIN[i] = low.currentValue;
         U[i] = NaN; // MAX[i];
-        D[i] = MIN[i - 1]; // 从上一个区间的最小值开始
+        D[i] = MIN.previousValue; // 从上一个区间的最小值开始
         AF[i] = start;
         return;
       }
-      direction[i] = direction[i - 1];
+      direction[i] = direction.previousValue;
       // 检查是否创新低
-      if (low[i] < MIN[i - 1]) {
-        AF[i] = Math.min(max, AF[i - 1] + increment);
+      if (low.currentValue < MIN.previousValue) {
+        AF[i] = Math.min(max, AF.previousValue + increment);
       } else {
-        AF[i] = AF[i - 1];
+        AF[i] = AF.previousValue;
       }
       // 维护区间极值
-      MAX[i] = Math.max(MAX[i - 1], high[i]);
-      MIN[i] = Math.min(MIN[i - 1], low[i]);
+      MAX[i] = Math.max(MAX.previousValue, high.currentValue);
+      MIN[i] = Math.min(MIN.previousValue, low.currentValue);
 
-      U[i] = U[i - 1] + AF[i] * (MIN[i - 1] - U[i - 1]);
+      U[i] =
+        U.previousValue +
+        AF.currentValue * (MIN.previousValue - U.previousValue);
       D[i] = NaN; // MIN[i];
     } else {
       // 按上行处理
 
       // 检查是否向下反转
-      if (low[i] <= D[i - 1]) {
+      if (low.currentValue <= D.previousValue) {
         direction[i] = -1;
-        MAX[i] = high[i];
-        MIN[i] = low[i];
+        MAX[i] = high.currentValue;
+        MIN[i] = low.currentValue;
         AF[i] = start;
-        U[i] = MAX[i - 1]; // 从上一个区间的最大值开始
+        U[i] = MAX.previousValue; // 从上一个区间的最大值开始
         D[i] = NaN; // MIN[i];
         return;
       }
-      direction[i] = direction[i - 1];
+      direction[i] = direction.previousValue;
       // 检查是否创新高
-      if (high[i] < MAX[i - 1]) {
-        AF[i] = Math.min(max, AF[i - 1] + increment);
+      if (high.currentValue < MAX.previousValue) {
+        AF[i] = Math.min(max, AF.previousValue + increment);
       } else {
-        AF[i] = AF[i - 1];
+        AF[i] = AF.previousValue;
       }
       // 维护区间极值
-      MAX[i] = Math.max(MAX[i - 1], high[i]);
-      MIN[i] = Math.min(MIN[i - 1], low[i]);
+      MAX[i] = Math.max(MAX.previousValue, high.currentValue);
+      MIN[i] = Math.min(MIN.previousValue, low.currentValue);
       U[i] = NaN; //MAX[i];
-      D[i] = D[i - 1] + AF[i] * (MAX[i - 1] - D[i - 1]);
+      D[i] =
+        D.previousValue +
+        AF.currentValue * (MAX.previousValue - D.previousValue);
     }
   });
   return { U, D, direction, MAX, MIN, AF };

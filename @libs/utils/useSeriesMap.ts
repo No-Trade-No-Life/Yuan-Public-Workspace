@@ -10,7 +10,7 @@ export const useSeriesMap = (
 ) => {
   const series = useSeries(name, parent, tags);
   useEffect(() => {
-    const i = parent.length - 1;
+    const i = parent.currentIndex;
     if (i < 0) return;
     series[i] = fn(i, series);
   });

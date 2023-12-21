@@ -28,7 +28,7 @@ export default () => {
   // Re-balance the position
   useEffect(() => {
     if (close.length < 2) return;
-    const price = close[close.length - 1];
+    const price = close.currentValue;
     const totalValue = accountInfo.money.equity + initial_balance;
     const totalValueToHold = totalValue * 0.5;
     // infer the volume to hold

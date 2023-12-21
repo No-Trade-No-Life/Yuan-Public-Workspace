@@ -26,7 +26,7 @@ export const useZigZag = (high: Series, low: Series, period: number) => {
   useEffect(() => {
     for (
       let i = Math.max(0, lastLowPeak.length) - 1;
-      i < high.length - 1;
+      i < high.currentIndex;
       i++
     ) {
       if (i <= 0) {
@@ -100,11 +100,11 @@ export const useZigZag = (high: Series, low: Series, period: number) => {
       }
     }
     if (high.length >= 1) {
-      lastHighPeak[high.length - 1] = NaN;
-      lastLowPeak[high.length - 1] = NaN;
-      currentZigzagValue[high.length - 1] = NaN;
-      lastZigzagValue[high.length - 1] = NaN;
-      secondLastZigzagValue[high.length - 1] = NaN;
+      lastHighPeak[high.currentIndex] = NaN;
+      lastLowPeak[high.currentIndex] = NaN;
+      currentZigzagValue[high.currentIndex] = NaN;
+      lastZigzagValue[high.currentIndex] = NaN;
+      secondLastZigzagValue[high.currentIndex] = NaN;
     }
   });
 

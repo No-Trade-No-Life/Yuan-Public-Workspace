@@ -26,13 +26,13 @@ export default () => {
   const pL = useSinglePosition(product_id, PositionVariant.LONG);
   const { ATR } = useATR(high, low, close, 14);
   const price_break = useRef(0);
-  const idx = close.length - 2;
+  const previousIndex = close.previousIndex;
 
   useRuleEffect(
     "当价格突破N日价格的最高价时，首次开仓做多，同时记录当前价格",
-    () => close[idx] > HH[idx - 1] && pL.volume === 0,
+    () => close.previousValue > HH[previousIndex - 1] && pL.volume === 0,
     () => {
-      price_break.current = close[idx];
+      price_break.current = close.previousValue;
       pL.setTargetVolume(1);
     },
     [close.length]
@@ -40,7 +40,7 @@ export default () => {
 
   useRuleEffect(
     "当多头头寸在突破过去10日最低价处止盈离市",
-    () => pL.volume > 0 && close[idx] < LL[idx - 1],
+    () => pL.volume > 0 && close.previousValue < LL[previousIndex - 1],
     () => {
       pL.setTargetVolume(0);
     },
@@ -49,14 +49,17 @@ export default () => {
 
   useRuleEffect(
     "当市价继续向盈利方向突破1/2 atr时加仓，止损位为2*atr",
-    () => pL.volume > 0 && close[idx] > price_break.current + 0.5 * ATR[idx],
+    () =>
+      pL.volume > 0 &&
+      close.previousValue > price_break.current + 0.5 * ATR.previousValue,
     () => {
       pL.setTargetVolume(pL.volume + 1);
-      pL.setStopLossPrice(price_break.current - 2 * ATR[idx]);
-      price_break.current = close[idx];
+      pL.setStopLossPrice(price_break.current - 2 * ATR.previousValue);
+      price_break.current = close.previousValue;
     },
     [close.length]
   );
+
   useSeriesMap(
     "净值",
     close,

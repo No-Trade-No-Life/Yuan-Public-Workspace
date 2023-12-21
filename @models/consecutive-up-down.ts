@@ -6,14 +6,13 @@
 // 并在附图中绘制连续上涨/下跌的信号的直方图
 import {
   useParamNumber,
+  useParamOHLC,
   useSeriesMap,
   useSinglePosition,
-  useParamOHLC,
 } from "@libs";
 
 export default () => {
   const { product_id, close } = useParamOHLC("SomeKey");
-  const idx = close.length - 2;
   const X = useParamNumber("X", 3);
   const Y = useParamNumber("Y", 5);
 
@@ -56,15 +55,15 @@ export default () => {
 
   useEffect(() => {
     //如果连续上涨
-    if (consecutiveUp[idx] === 1) {
+    if (consecutiveUp.previousValue === 1) {
       pL.setTargetVolume(1);
       pS.setTargetVolume(0);
     }
 
     //如果连续上涨
-    if (consecutiveDown[idx] === 1) {
+    if (consecutiveDown.previousValue === 1) {
       pL.setTargetVolume(0);
       pS.setTargetVolume(1);
     }
-  }, [idx]);
+  }, [close.previousIndex]);
 };

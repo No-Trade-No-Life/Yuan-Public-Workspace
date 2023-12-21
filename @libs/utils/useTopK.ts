@@ -7,26 +7,26 @@
 export const useTopK = (series: Series, k: number, period: number) => {
   const indexes = useRef<number[]>([]);
   const ret = useSeries(`TOP_K(${series.name},${k},${period})`, series, {});
-  const i = series.length - 1;
+  const currentIndex = series.currentIndex;
   useEffect(() => {
-    if (i < 0) return;
+    if (currentIndex < 0) return;
     let isChanged = false;
     // remove expired indexes
-    if (indexes.current[0] <= i - period) {
+    if (indexes.current[0] <= currentIndex - period) {
       indexes.current.shift();
       isChanged = true;
     }
-    if (series[i - 1]) {
-      indexes.current.push(i - 1);
+    if (series.previousValue) {
+      indexes.current.push(currentIndex - 1);
       isChanged = true;
     }
 
     if (isChanged) {
       const sorted = [...indexes.current].sort((a, b) => series[b] - series[a]);
-      ret[i] = series[sorted[Math.min(k, sorted.length) - 1]];
+      ret[currentIndex] = series[sorted[Math.min(k, sorted.length) - 1]];
     } else {
-      ret[i] = ret[i - 1] ?? NaN;
+      ret[currentIndex] = ret.previousValue ?? NaN;
     }
-  }, [i]);
+  }, [currentIndex]);
   return ret;
 };
