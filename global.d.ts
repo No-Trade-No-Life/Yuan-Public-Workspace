@@ -480,6 +480,10 @@ declare class Series extends Array<number> {
   name: string | undefined;
   tags: Record<string, any>;
   parent: Series | undefined;
+  get currentIndex(): number;
+  get previousIndex(): number;
+  get currentValue(): number;
+  get previousValue(): number;
 }
 /** Use a series */
 declare const useSeries: (
