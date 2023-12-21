@@ -30,7 +30,7 @@ export default () => {
       const thePosition = accountInfo.positions.find(
         (pos) => pos.position_id === `${grid}`
       );
-      if (!thePosition && close[close.length - 1] > grid) {
+      if (!thePosition && close.currentValue > grid) {
         orders.push({
           client_order_id: UUID(),
           account_id: accountInfo.account_id,

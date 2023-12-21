@@ -13,9 +13,9 @@ export const useRANGE = (source: Series, period: number) => {
     chart: "new",
   });
   useEffect(() => {
-    const i = source.length - 1;
-    if (i < 0) return;
-    Range[i] = max[i] - min[i];
+    const currentIndex = source.currentIndex;
+    if (currentIndex < 0) return;
+    Range[currentIndex] = max.currentValue - min.currentValue;
   });
   return Range;
 };

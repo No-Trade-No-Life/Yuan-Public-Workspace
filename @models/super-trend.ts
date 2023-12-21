@@ -10,6 +10,7 @@ import {
   useATR,
   useParamNumber,
   useParamOHLC,
+  useRuleEffect,
   useSeriesMap,
   useSinglePosition,
 } from "@libs";
@@ -19,10 +20,9 @@ export default () => {
   const A = useParamNumber("A", 2);
   const { ATR: atr } = useATR(high, low, close, 14);
 
-  const idx = close.length - 2;
   const pL = useSinglePosition(product_id, PositionVariant.LONG);
   const pS = useSinglePosition(product_id, PositionVariant.SHORT);
-  const prevClose = (close[idx] + open[idx]) / 2;
+  const prevClose = (close.previousValue + open.previousValue) / 2;
   const upper = useSeriesMap(
     "Upper",
     close,
@@ -35,19 +35,24 @@ export default () => {
     { display: "line" },
     (i) => prevClose - A * atr[i]
   );
-  useEffect(() => {
-    if (idx < 1) return;
 
-    if (close[idx] > upper[idx]) {
-      // 进入突破模式，做多
+  useRuleEffect(
+    "突破模式",
+    () => close.previousIndex > 0 && close.previousValue > upper.previousValue,
+    () => {
       pL.setTargetVolume(1);
       pS.setTargetVolume(0);
-    }
+    },
+    [close.previousIndex]
+  );
 
-    if (close[idx] < lower[idx]) {
-      // 进入下跌模式，做空
+  useRuleEffect(
+    "下跌模式",
+    () => close.previousIndex > 0 && close.previousValue < lower.previousValue,
+    () => {
       pL.setTargetVolume(0);
       pS.setTargetVolume(1);
-    }
-  }, [idx]);
+    },
+    [close.previousIndex]
+  );
 };

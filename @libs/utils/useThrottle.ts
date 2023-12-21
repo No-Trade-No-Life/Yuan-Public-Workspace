@@ -7,19 +7,19 @@ export const useThrottle = (series: Series, period: number) => {
   const ret = useSeries(`THROTTLE(${series.name},${period})`, series, {});
   const openIdxRef = useRef(0);
   useEffect(() => {
-    const i = series.length - 1;
-    if (i < 0) return;
-    if (i < openIdxRef.current) {
-      ret[i] = NaN;
+    const currentIndex = series.currentIndex;
+    if (currentIndex < 0) return;
+    if (currentIndex < openIdxRef.current) {
+      ret[currentIndex] = NaN;
       return;
     }
-    if (series[i - 1]) {
-      openIdxRef.current = i + period;
-      ret[i - 1] = series[i - 1];
-      ret[i] = NaN;
+    if (series[currentIndex - 1]) {
+      openIdxRef.current = currentIndex + period;
+      ret[currentIndex - 1] = series.previousValue;
+      ret[currentIndex] = NaN;
       return;
     }
-    ret[i] = series[i];
+    ret[currentIndex] = series.currentValue;
   });
   return ret;
 };
