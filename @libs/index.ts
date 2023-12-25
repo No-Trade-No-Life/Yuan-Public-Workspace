@@ -8,6 +8,7 @@ export const useAccountInfo = global.useAccountInfo;
 export const useLog = global.useLog;
 export const useProduct = global.useProduct;
 export const useOHLC = global.useOHLC;
+export const useTick = global.useTick;
 export const useRecordTable = global.useRecordTable;
 export const useExchange = global.useExchange;
 export const useSeries = global.useSeries;

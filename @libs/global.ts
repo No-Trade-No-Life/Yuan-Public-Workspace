@@ -10,6 +10,7 @@ export const global = {
   useLog,
   useProduct,
   useOHLC,
+  useTick,
   decodePath,
   encodePath,
   useRecordTable,
