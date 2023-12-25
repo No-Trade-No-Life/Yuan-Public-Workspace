@@ -162,6 +162,61 @@ declare interface IPosition {
   comment?: string;
 }
 /**
+ * Tick: Market transaction data at a certain moment
+ * Tick: 某个时刻的市场成交行情数据
+ */
+
+declare interface ITick {
+  /**
+   * Data source ID
+   * 数据源 ID
+   */
+  datasource_id: string;
+  /**
+   * Product ID
+   * 品种 ID
+   */
+  product_id: string;
+  /**
+   * Timestamp (in microseconds)
+   * 时间戳
+   * @deprecated use updated_at instead
+   */
+  timestamp_in_us: number;
+  /**
+   * Timestamp (in ms)
+   * 时间戳
+   */
+  updated_at?: number;
+  /**
+   * Price
+   * 成交价
+   */
+  price: number;
+  /**
+   * Volume
+   * 成交量
+   */
+  volume: number;
+  /**
+   * Open interest
+   * 持仓量
+   */
+  open_interest?: number;
+  /**
+   * Spread
+   * 点差
+   */
+  spread?: number;
+  /**
+   * Ask price
+   * 卖一价
+   */
+  ask?: number;
+  /** 买一价 */
+  bid?: number;
+}
+/**
  * Account fund information
  *
  * @remarks
@@ -517,6 +572,20 @@ declare const useOHLC: (
   close: Series;
   volume: Series;
 };
+
+/**
+ * Use Tick
+ *
+ * @param account_id - The AccountID in Agent
+ * @param datasource_id - The DataSourceID in Host
+ * @param product_id - The ProductID in the Data Source
+ * @returns the Tick data. undefined if not loaded
+ */
+declare const useTick: (
+  account_id: string,
+  datasource_id: string,
+  product_id: string
+) => ITick | undefined;
 
 /** Use Account Info */
 declare const useAccountInfo: (options?: {
