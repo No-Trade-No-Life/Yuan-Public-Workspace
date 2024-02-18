@@ -293,54 +293,39 @@ declare interface IAccountInfo {
 }
 
 /**
- * Product: Subject Matter of trading
- *
- * @public
+ * Product: The underlying asset of a transaction.
  */
 declare interface IProduct {
   /** Data source ID */
   datasource_id: string;
-  /** Product ID */
+  /**
+   * Product ID
+   *
+   * It's RECOMMENDED that make the product ID the original form from the data source. Don't transform it to somehow standard form.
+   */
   product_id: string;
-  /** Readable product name */
+  /** Human-readable product name */
   name?: string;
+  /**
+   * The quote currency to price the product.
+   *
+   * e.g. "USD", "CNY", "GBP", "USDT", "BTC", ...etc.
+   */
+  quote_currency?: string;
 
   /**
    * Base Currency
    *
+   * Only available in foreign exchange products.
+   *
+   * If defined, the price of this product (P(this, quote_currency)) can be treated as P(base_currency, quote_currency)
+   *
    * The base currency is the currency used as the basis for exchange rate quotes, expressed as the number of units of the currency that can be exchanged for one unit of the quoted currency.
    *
    * e.g. The base currency of GBPJPY is GBP; the base currency of USDCAD is USD.
-   * e.g. GBPJPY 的 base_currency 为 GBP; USDCAD 的 base_currency 为 USD.
+   *
    */
-  base_currency: string;
-
-  /**
-   * Quoted Currency
-   *
-   * The quoted currency is the currency being used as the reference for the exchange rate quote, expressed as the number of units of the quoted currency that can be exchanged for one unit of the base currency.
-   *
-   * e.g. The quoted currency of GBPJPY is JPY; the quoted currency of USDCAD is CAD.
-   * e.g. GBPJPY 的 quoted_currency 为 JPY; USDCAD 的 quoted_currency 为 CAD.
-   *
-   * For non-forex products, the quoted currency should be empty.
-   */
-  quoted_currency?: string;
-
-  /**
-   * Is the underlying asset the base currency?
-   *
-   * One lot corresponds to the quantity of the underlying asset specified by value_speed, which can be the base currency or other commodities.
-   *
-   * - For commodities, including spot and futures, this value is usually false, because one lot corresponds to a multiple of value_speed of the commodity quantity.
-   *
-   * - For forex, this value is usually true, because one lot corresponds to a multiple of value_speed of the equivalent of the base currency in any currency.
-   *
-   * If the value is empty, it is semantically equivalent to false.
-   *
-   * If this value is true, an additional division by the "closing price" of this product is required in the standard yield formula.
-   */
-  is_underlying_base_currency?: boolean;
+  base_currency?: string;
 
   /**
    * price step, default is 1
@@ -351,18 +336,22 @@ declare interface IProduct {
    */
   volume_step?: number;
   /**
-   * Value speed, default is 1
+   * Value scale, default is 1
    *
    * The quantity of the underlying asset specified by one lot.
-   *
-   * ~~For every 1 lot increase in price, the settlement asset income obtained~~
    */
-  value_speed?: number;
+  value_scale?: number;
+
+  /**
+   * Unit of value scale.
+   *
+   * - Leave empty to use the product itself.
+   * - If the value is equal to currency, it means that the 1 volume is based on the currency.
+   */
+  value_scale_unit?: string;
 
   /**
    * Margin rate
-   *
-   * Margin calculation reference [How to calculate margin](https://tradelife.feishu.cn/wiki/wikcnEVBM0RQ7pmbNZUxMV8viRg)
    */
   margin_rate?: number;
 
