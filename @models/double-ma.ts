@@ -1,13 +1,16 @@
 // 双均线策略 (Double Moving Average)
 // 当短期均线由下向上穿越长期均线时做多 (金叉)
 // 当短期均线由上向下穿越长期均线时做空 (死叉)
-import { useParamOHLC, useSMA, useSimplePositionManager } from "@libs";
+import {
+  useParamOHLC,
+  useRuleEffect,
+  useSMA,
+  useSimplePositionManager,
+} from "@libs";
 
 export default () => {
   // 使用收盘价序列
-  const { product_id, close } = useParamOHLC("SomeKey");
-  // NOTE: 使用当前 K 线的上一根 K 线的收盘价，保证策略在 K 线结束时才会执行
-  const idx = close.length - 2;
+  const { product_id, close } = useParamOHLC("品种");
 
   // 使用 20，60 均线
   const sma20 = useSMA(close, 20);
@@ -21,15 +24,17 @@ export default () => {
     product_id
   );
 
-  useEffect(() => {
-    if (idx < 60) return; // 略过一开始不成熟的均线数据
-    // 金叉开多平空
-    if (sma20[idx] > sma60[idx]) {
-      setTargetVolume(1);
-    }
-    // 死叉开空平多
-    if (sma20[idx] < sma60[idx]) {
-      setTargetVolume(-1);
-    }
-  }, [idx]);
+  useRuleEffect(
+    "均线金叉做多",
+    () => sma20.previousValue > sma60.previousValue,
+    () => setTargetVolume(1),
+    [close.currentIndex]
+  );
+
+  useRuleEffect(
+    "均线死叉做空",
+    () => sma20.previousValue < sma60.previousValue,
+    () => setTargetVolume(-1),
+    [close.currentIndex]
+  );
 };
