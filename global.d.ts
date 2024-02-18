@@ -587,7 +587,10 @@ declare const useAccountInfo: (options?: {
 /** Use Exchange */
 declare const useExchange: () => {
   /** Get Quote of Product */
-  getQuote: (product_id: string) => { ask: number; bid: number };
+  getQuote: (
+    datasource_id: string,
+    product_id: string
+  ) => { ask: number; bid: number };
   /** Get Order by Order ID */
   getOrderById: (id: string) => IOrder | undefined;
   /** List of unfilled orders */

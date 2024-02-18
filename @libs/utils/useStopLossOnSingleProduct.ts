@@ -96,7 +96,8 @@ export const useStopLossOnSingleProduct = (
         -(drawdown_quota - position.floating_profit),
         position.variant,
         tar.money.currency,
-        (product_id) => ex.getQuote(product_id) || { ask: 1, bid: 1 }
+        (product_id) =>
+          ex.getQuote(source_account_id, product_id) || { ask: 1, bid: 1 }
       );
       mapProductIdVariantToClosePrice[
         `${position.product_id}${position.variant}`
