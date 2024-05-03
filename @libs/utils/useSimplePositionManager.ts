@@ -45,72 +45,72 @@ export const useSimplePositionManager = (
   // OPEN LONG: submit & cancel order.
   useEffect(() => {
     if (openLongVolume <= 0) return;
-    const order = {
-      client_order_id: UUID(),
+    const order: IOrder = {
+      order_id: UUID(),
       account_id,
       product_id,
       position_id: longPositionId,
-      type: OrderType.MARKET,
-      direction: OrderDirection.OPEN_LONG,
+      order_type: "MARKET",
+      order_direction: "OPEN_LONG",
       volume: openLongVolume,
     };
     exchange.submitOrder(order);
     return () => {
-      exchange.cancelOrder(order.client_order_id);
+      exchange.cancelOrder(order.order_id!);
     };
   }, [openLongVolume]);
 
   // OPEN SHORT: submit & cancel order.
   useEffect(() => {
     if (openShortVolume <= 0) return;
-    const order = {
-      client_order_id: UUID(),
+    const order: IOrder = {
+      order_id: UUID(),
       account_id,
       product_id,
       position_id: shortPositionId,
-      type: OrderType.MARKET,
-      direction: OrderDirection.OPEN_SHORT,
+      order_type: "MARKET",
+      order_direction: "OPEN_SHORT",
       volume: openShortVolume,
     };
     exchange.submitOrder(order);
     return () => {
-      exchange.cancelOrder(order.client_order_id);
+      exchange.cancelOrder(order.order_id!);
     };
   }, [openShortVolume]);
 
   // CLOSE LONG: submit & cancel order.
   useEffect(() => {
     if (closeLongVolume <= 0) return;
-    const order = {
-      client_order_id: UUID(),
+    const order: IOrder = {
+      order_id: UUID(),
       account_id,
       product_id,
       position_id: longPositionId,
-      type: OrderType.MARKET,
-      direction: OrderDirection.CLOSE_LONG,
+      order_type: "MARKET",
+      order_direction: "CLOSE_LONG",
       volume: closeLongVolume,
     };
     exchange.submitOrder(order);
     return () => {
-      exchange.cancelOrder(order.client_order_id);
+      exchange.cancelOrder(order.order_id!);
     };
   }, [closeLongVolume]);
 
   // CLOSE SHORT: submit & cancel order.
   useEffect(() => {
     if (closeShortVolume <= 0) return;
-    const order = {
-      client_order_id: UUID(),
+    const order: IOrder = {
+      order_id: UUID(),
       account_id,
       product_id,
       position_id: shortPositionId,
-      type: OrderType.MARKET,
-      direction: OrderDirection.CLOSE_SHORT,
+      order_type: "MARKET",
+      order_direction: "CLOSE_SHORT",
       volume: closeShortVolume,
     };
     exchange.submitOrder(order);
     return () => {
-      exchange.cancelOrder(order.client_order_id);
+      exchange.cancelOrder(order.order_id!);
     };
   }, [closeShortVolume]);
 

@@ -20,8 +20,8 @@ export default () => {
   const { ATR: atr } = useATR(high, low, close, 14);
 
   const idx = close.length - 2;
-  const pL = useSinglePosition(product_id, PositionVariant.LONG);
-  const pS = useSinglePosition(product_id, PositionVariant.SHORT);
+  const pL = useSinglePosition(product_id, "LONG");
+  const pS = useSinglePosition(product_id, "SHORT");
   const prevClose = (close[idx] + open[idx]) / 2;
   const upper = useSeriesMap(
     "Upper",

@@ -16,23 +16,15 @@ export function usePositionLimit(
     currency: src.money.currency,
     leverage: src.money.leverage,
   });
-  const pL = useSinglePosition(
-    product_id,
-    PositionVariant.LONG,
-    tar.account_id
-  );
-  const pS = useSinglePosition(
-    product_id,
-    PositionVariant.SHORT,
-    tar.account_id
-  );
+  const pL = useSinglePosition(product_id, "LONG", tar.account_id);
+  const pS = useSinglePosition(product_id, "SHORT", tar.account_id);
   useEffect(() => {
     const srcNetPosition = src.positions.reduce(
       (acc, cur) =>
         acc +
         (cur.product_id !== product_id
           ? 0
-          : cur.volume * (cur.variant === PositionVariant.LONG ? 1 : -1)),
+          : cur.volume * (cur.direction === "LONG" ? 1 : -1)),
       0
     );
     pL.setTargetVolume(

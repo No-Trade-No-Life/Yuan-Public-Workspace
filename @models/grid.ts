@@ -32,24 +32,24 @@ export default () => {
       );
       if (!thePosition && close[close.length - 1] > grid) {
         orders.push({
-          client_order_id: UUID(),
+          order_id: UUID(),
           account_id: accountInfo.account_id,
           product_id,
           position_id: `${grid}`,
-          type: OrderType.LIMIT,
-          direction: OrderDirection.OPEN_LONG,
+          order_type: "LIMIT",
+          order_direction: "OPEN_LONG",
           volume: 1,
           price: grid,
         });
       }
       if (thePosition) {
         orders.push({
-          client_order_id: UUID(),
+          order_id: UUID(),
           account_id: accountInfo.account_id,
           product_id,
           position_id: `${grid}`,
-          type: OrderType.LIMIT,
-          direction: OrderDirection.CLOSE_LONG,
+          order_type: "LIMIT",
+          order_direction: "CLOSE_LONG",
           volume: 1,
           price: GRIDS[idx + 1],
         });
@@ -59,7 +59,7 @@ export default () => {
     exchange.submitOrder(...orders);
     return () => {
       for (const order of orders) {
-        exchange.cancelOrder(order.client_order_id);
+        exchange.cancelOrder(order.order_id!);
       }
     };
   });

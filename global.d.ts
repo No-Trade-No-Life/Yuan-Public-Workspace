@@ -1,165 +1,225 @@
 /**
- * Order: Change the {@link IPosition} of {@link IAccountInfo} in the account through trading commands
+ * Order: Changes the {@link IPosition} of the {@link IAccountInfo} in the account through a trading command.
+ * 订单: 通过交易命令改变账户内 {@link IAccountInfo} 头寸 {@link IPosition}
  * @public
  */
 declare interface IOrder {
   /**
-   * Client order ID
+   * Order ID
    */
-  client_order_id: string;
+  order_id?: string;
   /**
-   * Exchange order ID (if any)
-   */
-  exchange_order_id?: string;
-  /**
-   * Account ID
+   * Account ID.
+   * 账户 ID
    *
    * {@link IAccountInfo.account_id}
    */
   account_id: string;
   /**
-   * Product ID
+   * Product ID.
+   * 品种 ID
    *
    * {@link IProduct}
    */
   product_id: string;
+
   /**
-   * Specify the position ID that needs to be operated
+   * Specifies the position ID to be operated on.
+   * 指定需要操作的头寸 ID
    *
-   * - If left blank, it means "which specific position under the same account and product can be operated"
-   * - If filled in, only the matching position can be operated, and other positions under the same account and product cannot be affected.
+   * - only the matching position can be operated on, and other positions under the same account and product cannot be affected.
+   * - 如果填写了，只能操作匹配的头寸，不得影响同账户下同品种下的其他头寸。
    *
    * {@link IPosition.position_id}
    */
   position_id?: string;
-  /** Order type */
-  type: OrderType;
-  /** Order direction */
-  direction: OrderDirection;
-  /** Commission volume */
+  /**
+   * Order matching type.
+   *
+   * - `LIMIT`: Limits the price at which the order can be executed (default)
+   * - `MARKET`: Executed at the current market price
+   * - `STOP`: Triggers a market order when the market price reaches the order price
+   * - `FOK`: Requires immediate and complete
+   * - `IOC`: Requires immediate execution, allows partial execution, and cancels the rest
+   */
+  order_type?: string;
+  /**
+   * Order direction.
+   *
+   * - `OPEN_LONG`: Open long position
+   * - `CLOSE_LONG`: Close long position
+   * - `OPEN_SHORT`: Open short position
+   * - `CLOSE_SHORT`: Close short position
+   */
+  order_direction?: string;
+  /**
+   * Order volume.
+   * 委托量
+   */
   volume: number;
   /**
-   * Profit and loss correction under non-standard models
-   *
-   * When the profit and loss model is non-standard, a profit and loss correction value can be added to correct the standard model profit and loss to the actual profit and loss.
-   *
-   * Profit and loss correction = actual profit and loss - standard profit and loss
-   *
-   * If this value is empty, the semantics are equivalent to 0
-   *
-   * Refer to [How to calculate profit and loss](https://tradelife.feishu.cn/wiki/wikcnRNzWSF7jtkH8nGruaMhhlh)
-   *
+   * Submit order timestamp.
    */
-  profit_correction?: number;
+  submit_at?: number;
   /**
-   * Actual profit and loss
-   *
-   * When closing a position, the amount of change in the account balance
-   *
-   * If this value is empty, the semantics are equivalent to "profit and loss correction == 0", that is, "standard profit and loss == actual profit and loss"
-   *
-   * Refer to [How to calculate profit and loss](https://tradelife.feishu.cn/wiki/wikcnRNzWSF7jtkH8nGruaMhhlh)
+   * Order filled timestamp.
    */
-  real_profit?: number;
+  filled_at?: number;
   /**
-   * Inferred price of the base currency against the margin currency when closing the position
-   *
-   * if this value is empty, the semantics are equivalent to 1 (that is, the base currency == margin currency)
-   *
-   * Refer to [How to calculate profit and loss](https://tradelife.feishu.cn/wiki/wikcnRNzWSF7jtkH8nGruaMhhlh)
-   */
-  inferred_base_currency_price?: number;
-  /**
-   * Order timestamp / transaction timestamp
-   */
-  timestamp_in_us?: number;
-  /**
-   * Order price
+   * Order price.
+   * 委托价
    */
   price?: number;
   /**
-   * Traded volume
+   * Traded volume.
+   * 成交量
    */
-  /** 成交量 */
   traded_volume?: number;
   /**
-   * Traded price
+   * Traded price.
+   * 成交价
    */
   traded_price?: number;
   /**
-   * Order status
+   * Order status.
+   *
+   * - `ACCEPTED`: Order accepted by the exchange
+   * - `TRADED`: Order partially filled
+   * - `CANCELLED`: Order cancelled
    */
-  status?: OrderStatus;
+  order_status?: string;
   /**
-   * Order comment
+   * Order comment.
+   * 订单注释
    */
   comment?: string;
+
   /**
-   * Take profit price
+   * Profit and loss correction in non-standard models.
+   * 非标准模型下的盈亏修正
+   *
+   * When the profit and loss model is non-standard,
+   * a profit and loss correction value can be added to correct the standard model profit and loss to the actual profit and loss.
+   * 当盈亏模型非标准时，可以添加一个盈亏修正值，将标准模型盈亏修正到实际盈亏。
+   *
+   * Profit and loss correction = actual profit and loss - standard profit and loss
+   * 盈亏修正 = 实际盈亏 - 标准盈亏
+   *
+   * If this value is empty, it is semantically equivalent to 0.
+   * 如果此值为空，语义等同于 0
+   */
+  profit_correction?: number;
+
+  /**
+   * Actual profit and loss.
+   * 实际盈亏
+   *
+   * The amount of change in the account balance when closing a position.
+   * 平仓时，对账户的余额产生的改变量
+   *
+   * If this value is empty, it is semantically equivalent to "profit_correction == 0", i.e., "standard profit and loss == actual profit and loss".
+   * 如果此值为空，语义等同于 "盈亏修正 == 0" 即 "标准盈亏 == 实际盈亏"
+   */
+  real_profit?: number;
+
+  /**
+   * The inferred price of the base currency against the margin currency at the time of closing the position.
+   * 推断得到的平仓时基准货币兑保证金货币的价格
+   *
+   * If this value is empty, it is semantically equivalent to 1 (i.e., the base currency is the same as the margin currency).
+   * 如果此值为空，语义等同于 1 (即基准货币 == 保证金货币)
+   */
+  inferred_base_currency_price?: number;
+  /**
+   * Take profit price (ignored for now).
+   * 止盈价 (暂时不可用)
+   * @deprecated to remove
    */
   take_profit_price?: number;
   /**
-   * Stop loss price
+   * Stop loss price (ignored for now).
+   * 止损价 (暂时不可用)
+   * @deprecated to remove
    */
   stop_loss_price?: number;
 }
+
 /**
- * Position Variant
- * @public
- */
-declare enum PositionVariant {
-  /** Long */
-  LONG = 0,
-  /** Short */
-  SHORT = 1,
-}
-/**
- * Atomic position information
+ * Position: Atomic position information.
+ * 原子性的持仓头寸信息
  *
- * Same product positions can be summed up into one position
+ * Positions on the same product can be aggregated.
+ * 相同品种上的头寸可以被合计
  *
  * @public
  */
 declare interface IPosition {
   /**
-   * Position ID
+   * Position ID.
+   * 头寸 ID
    */
   position_id: string;
   /**
-   * Product ID
+   * Product ID.
+   * 品种 ID
    */
   product_id: string;
   /**
-   * Position variant
+   * Position direction (LONG | SHORT)
    *
-   * can be used to calculate net position
+   * - `"LONG"`: Long position
+   * - `"SHORT"`: Short position
    */
-  variant: PositionVariant;
+  direction?: string;
   /**
-   * Volume
+   * Position volume (non-negative).
+   * 持仓量 (非负)
    *
-   * Settlement net value should refer to this field
+   * When calculating net value, this field should be referenced.
+   * 结算净值时应参考此字段
    */
   volume: number;
   /**
-   * Tradable volume (non-negative)
+   * Tradable volume (non-negative).
+   * 可交易量 (非负)
    *
-   * This field should be checked when placing an order
+   * When placing an order, this field should be referenced.
+   * 下单时应检查此字段
    *
-   * When the market is T+0 trading, it should be consistent with the volume field;
-   * When the market is T+1 trading, it may be smaller than the volume.
+   * For T+0 trading, this field should be consistent with the volume field;
+   * 市场为 T+0 交易时应当与 volume 字段一致;
+   * For T+1 trading, this field may be smaller than the volume field.
+   * 市场为 T+1 交易时，可能比 volume 小.
    */
   free_volume: number;
-  /** Position cost price (the intrinsic meaning of the price can be obtained through product_id) */
-  position_price: number;
-  /** Current closable settlement price */
-  closable_price: number;
-  /** Floating profit and loss of the position */
-  floating_profit: number;
   /**
-   * Remarks of the position
+   * Position price.
+   * 持仓成本价 (可通过 product_id 得到价格的内在含义)
+   */
+  position_price: number;
+
+  /**
+   * The current closable settlement price.
+   * 当前可平仓结算价格
+   */
+  closable_price: number;
+
+  /**
+   * Floating profit and loss of the position.
+   * 持仓浮动盈亏
+   */
+  floating_profit: number;
+
+  /**
+   * the comment of the position.
+   * 头寸的备注
    */
   comment?: string;
+
+  // Position is one of the reasons for occupying margin,
+  // but the calculation mechanism of margin is relatively complex, and the algorithms of various exchanges are different.
+  // Therefore, Yuan does not calculate the margin based on the final margin given by the exchange.
+  // margin: number;
 }
 /**
  * Tick: Market transaction data at a certain moment
@@ -388,80 +448,6 @@ declare interface IProduct {
    * Spread
    */
   spread?: number;
-}
-
-/**
- * 订单类型
- * @public
- */
-declare enum OrderType {
-  /**
-   * Market Order: Executed at the current market price
-   *
-   * The most common and simple order type, no need to specify an order price
-   */
-  MARKET = 0,
-  /**
-   * Limit Order: Limits the price at which the order can be executed
-   *
-   * - BUY LIMIT: The execution price will not be higher than the order price
-   * - SELL LIMIT: The execution price will not be lower than the order price
-   */
-  LIMIT = 1,
-  /**
-   * Stop Order: Triggers a market order when the market price reaches the order price
-   *
-   * - BUY STOP: Place an order when the market price is higher than the order price
-   * - SELL STOP: Place an order when the market price is lower than the order price
-   */
-  STOP = 2,
-  /**
-   * Fill or Kill: Requires immediate and complete
-   *
-   * It is required to be executed immediately and completely when placing an order, otherwise it will be cancelled
-   */
-  FOK = 3,
-  /**
-   * Immediate or Cancel: Requires immediate execution, allows partial execution, and cancels the rest
-   *
-   * It is required to be executed immediately when placing an order, allows partial execution, and cancels the rest
-   */
-  IOC = 4,
-}
-
-/**
- * 订单方向
- * @public
- */
-declare enum OrderDirection {
-  /**
-   * Open long position
-   */
-  OPEN_LONG = 0,
-  /**
-   * Close long position
-   */
-  CLOSE_LONG = 1,
-  /**
-   * Open short position
-   */
-  OPEN_SHORT = 2,
-  /**
-   * Close short position
-   */
-  CLOSE_SHORT = 3,
-}
-/**
- * 订单状态
- * @public
- */
-declare enum OrderStatus {
-  /** 交易所已接受委托 */
-  ACCEPTED = 0,
-  /** 已成交 */
-  TRADED = 1,
-  /** 已撤单 */
-  CANCELLED = 2,
 }
 
 // Basic Hooks

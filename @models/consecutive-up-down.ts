@@ -51,8 +51,8 @@ export default () => {
     }
   );
 
-  const pL = useSinglePosition(product_id, PositionVariant.LONG);
-  const pS = useSinglePosition(product_id, PositionVariant.SHORT);
+  const pL = useSinglePosition(product_id, "LONG");
+  const pS = useSinglePosition(product_id, "SHORT");
 
   useEffect(() => {
     //如果连续上涨

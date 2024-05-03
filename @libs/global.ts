@@ -1,7 +1,4 @@
 export const global = {
-  PositionVariant,
-  OrderDirection,
-  OrderType,
   useRef,
   useEffect,
   useMemo,

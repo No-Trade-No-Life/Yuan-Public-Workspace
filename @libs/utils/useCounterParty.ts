@@ -19,23 +19,23 @@ export function useCounterParty(source_account_id: string) {
         const theOrder = {
           ...order,
           account_id: tar.account_id,
-          client_order_id: UUID(),
+          order_id: UUID(),
           type:
-            order.type === OrderType.STOP
-              ? OrderType.LIMIT
-              : order.type === OrderType.LIMIT
-              ? OrderType.STOP
-              : order.type,
+            order.order_type === "STOP"
+              ? "LIMIT"
+              : order.order_type === "LIMIT"
+              ? "STOP"
+              : order.order_type,
           direction:
-            order.direction === OrderDirection.OPEN_LONG
-              ? OrderDirection.OPEN_SHORT
-              : order.direction === OrderDirection.OPEN_SHORT
-              ? OrderDirection.OPEN_LONG
-              : order.direction === OrderDirection.CLOSE_LONG
-              ? OrderDirection.CLOSE_SHORT
-              : order.direction === OrderDirection.CLOSE_SHORT
-              ? OrderDirection.CLOSE_LONG
-              : order.direction,
+            order.order_direction === "OPEN_LONG"
+              ? "OPEN_SHORT"
+              : order.order_direction === "OPEN_SHORT"
+              ? "OPEN_LONG"
+              : order.order_direction === "CLOSE_LONG"
+              ? "CLOSE_SHORT"
+              : order.order_direction === "CLOSE_SHORT"
+              ? "CLOSE_LONG"
+              : order.order_direction,
         };
         ex.submitOrder(theOrder);
         orders.push(theOrder);
@@ -43,7 +43,7 @@ export function useCounterParty(source_account_id: string) {
     }
     return () => {
       for (const order of orders) {
-        ex.cancelOrder(order.client_order_id);
+        ex.cancelOrder(order.order_id!);
       }
     };
   });

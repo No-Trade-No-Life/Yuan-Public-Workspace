@@ -33,8 +33,8 @@ export default () => {
     _突破卖出价[i] = 突破卖出价;
   });
   // 设置仓位管理器
-  const pL = useSinglePosition(product_id, PositionVariant.LONG);
-  const pS = useSinglePosition(product_id, PositionVariant.SHORT);
+  const pL = useSinglePosition(product_id, "LONG");
+  const pS = useSinglePosition(product_id, "SHORT");
 
   const price = C[C.length - 1];
 

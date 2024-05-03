@@ -5,7 +5,7 @@
  * @param openPrice - 开仓价
  * @param volume - 成交量
  * @param desiredProfit - 目标盈利
- * @param variant - 仓位类型
+ * @param direction - 仓位方向
  * @param currency - 账户货币
  * @param quotes - 市场报价
  * @returns - 目标平仓价
@@ -15,14 +15,14 @@ export const getClosePriceByDesiredProfit = (
   openPrice: number,
   volume: number,
   desiredProfit: number,
-  variant: PositionVariant,
+  direction: string,
   currency: string,
   quotes: (product_id: string) => { ask: number; bid: number } | undefined
 ) => {
-  const variant_coefficient = variant === PositionVariant.LONG ? 1 : -1;
+  const variant_coefficient = direction === "LONG" ? 1 : -1;
   const cross_product_exchange_rate =
     product.quote_currency !== currency
-      ? (variant === PositionVariant.LONG
+      ? (direction === "LONG"
           ? quotes(`${product.quote_currency}${currency}`)?.bid
           : quotes(`${product.quote_currency}${currency}`)?.ask) ?? 1
       : 1;
