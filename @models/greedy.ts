@@ -6,8 +6,8 @@ import { useParamOHLC, useSinglePosition } from "@libs";
 export default () => {
   const { product_id, open, high, low, close } = useParamOHLC("SomeKey");
 
-  const pL = useSinglePosition(product_id, PositionVariant.LONG);
-  const pS = useSinglePosition(product_id, PositionVariant.SHORT);
+  const pL = useSinglePosition(product_id, "LONG");
+  const pS = useSinglePosition(product_id, "SHORT");
   const flag = useRef(0);
 
   useEffect(() => {

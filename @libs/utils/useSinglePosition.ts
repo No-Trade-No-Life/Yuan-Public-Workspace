@@ -5,7 +5,7 @@
  */
 export const useSinglePosition = (
   product_id: string,
-  variant: PositionVariant,
+  direction: string,
   account_id?: string
 ): {
   targetVolume: number;
@@ -24,7 +24,7 @@ export const useSinglePosition = (
   ) || {
     position_id,
     product_id,
-    variant,
+    direction,
     volume: 0,
     free_volume: 0,
     position_price: NaN,
@@ -46,14 +46,14 @@ export const useSinglePosition = (
   useEffect(() => {
     if (
       (takeProfitOrderRef.current &&
-        !ex.getOrderById(takeProfitOrderRef.current.client_order_id)) ||
+        !ex.getOrderById(takeProfitOrderRef.current.order_id!)) ||
       (stopLossOrderRef.current &&
-        !ex.getOrderById(stopLossOrderRef.current.client_order_id))
+        !ex.getOrderById(stopLossOrderRef.current.order_id!))
     ) {
       // cancel the rest
       ex.cancelOrder(
-        takeProfitOrderRef.current?.client_order_id || "",
-        stopLossOrderRef.current?.client_order_id || ""
+        takeProfitOrderRef.current?.order_id || "",
+        stopLossOrderRef.current?.order_id || ""
       );
       takeProfitOrderRef.current = null;
       stopLossOrderRef.current = null;
@@ -75,15 +75,13 @@ export const useSinglePosition = (
           return;
         }
         const order: IOrder = {
-          client_order_id: UUID(),
+          order_id: UUID(),
           account_id: accountId,
           product_id: position.product_id,
           position_id: position.position_id,
-          type: OrderType.MARKET,
-          direction:
-            position.variant === PositionVariant.LONG
-              ? OrderDirection.OPEN_LONG
-              : OrderDirection.OPEN_SHORT,
+          order_type: "MARKET",
+          order_direction:
+            position.direction === "LONG" ? "OPEN_LONG" : "OPEN_SHORT",
           volume: roundToStep(
             targetVolumeRef.current - position.volume,
             volume_step
@@ -91,7 +89,7 @@ export const useSinglePosition = (
         };
         ex.submitOrder(order);
         return () => {
-          ex.cancelOrder(order.client_order_id);
+          ex.cancelOrder(order.order_id!);
         };
       }
       if (targetVolumeRef.current < position.volume) {
@@ -103,20 +101,18 @@ export const useSinglePosition = (
           return;
         }
         const order: IOrder = {
-          client_order_id: UUID(),
+          order_id: UUID(),
           account_id: accountId,
           product_id: position.product_id,
           position_id: position.position_id,
-          type: OrderType.MARKET,
-          direction:
-            position.variant === PositionVariant.LONG
-              ? OrderDirection.CLOSE_LONG
-              : OrderDirection.CLOSE_SHORT,
+          order_type: "MARKET",
+          order_direction:
+            position.direction === "LONG" ? "CLOSE_LONG" : "CLOSE_SHORT",
           volume,
         };
         if (order.volume) ex.submitOrder(order);
         return () => {
-          ex.cancelOrder(order.client_order_id);
+          ex.cancelOrder(order.order_id!);
         };
       }
     }
@@ -126,15 +122,13 @@ export const useSinglePosition = (
   useEffect(() => {
     if (takeProfitPriceRef.current && position.volume) {
       const order: IOrder = {
-        client_order_id: UUID(),
+        order_id: UUID(),
         account_id: accountId,
         product_id,
         position_id,
-        type: OrderType.LIMIT,
-        direction:
-          position.variant === PositionVariant.LONG
-            ? OrderDirection.CLOSE_LONG
-            : OrderDirection.CLOSE_SHORT,
+        order_type: "LIMIT",
+        order_direction:
+          position.direction === "LONG" ? "CLOSE_LONG" : "CLOSE_SHORT",
         price: takeProfitPriceRef.current,
         volume: position.volume,
       };
@@ -142,7 +136,7 @@ export const useSinglePosition = (
       ex.submitOrder(order);
       return () => {
         takeProfitOrderRef.current = null;
-        ex.cancelOrder(order.client_order_id);
+        ex.cancelOrder(order.order_id!);
       };
     }
   }, [takeProfitPriceRef.current, position.volume]);
@@ -151,15 +145,13 @@ export const useSinglePosition = (
   useEffect(() => {
     if (stopLossPriceRef.current && position.volume) {
       const order: IOrder = {
-        client_order_id: UUID(),
+        order_id: UUID(),
         account_id: accountId,
         product_id,
         position_id,
-        type: OrderType.STOP,
-        direction:
-          position.variant === PositionVariant.LONG
-            ? OrderDirection.CLOSE_LONG
-            : OrderDirection.CLOSE_SHORT,
+        order_type: "STOP",
+        order_direction:
+          position.direction === "LONG" ? "CLOSE_LONG" : "CLOSE_SHORT",
         price: stopLossPriceRef.current,
         volume: position.volume,
       };
@@ -167,7 +159,7 @@ export const useSinglePosition = (
       ex.submitOrder(order);
       return () => {
         stopLossOrderRef.current = null;
-        ex.cancelOrder(order.client_order_id);
+        ex.cancelOrder(order.order_id!);
       };
     }
   }, [stopLossPriceRef.current, position.volume]);

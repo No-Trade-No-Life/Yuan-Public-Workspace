@@ -23,7 +23,7 @@ export default () => {
 
   const accountInfo = useAccountInfo();
 
-  const pL = useSinglePosition(product_id, PositionVariant.LONG);
+  const pL = useSinglePosition(product_id, "LONG");
   const { ATR } = useATR(high, low, close, 14);
   const price_break = useRef(0);
   const idx = close.length - 2;

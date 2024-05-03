@@ -26,7 +26,7 @@ export const useStopLossOnSingleProduct = (
   useEffect(() => {
     if (hasStopped.current) return;
     for (const order of stopLossOrders.current.values()) {
-      const theOrder = ex.getOrderById(order.client_order_id);
+      const theOrder = ex.getOrderById(order.order_id!);
       if (!theOrder) {
         log("Triggered StopLoss Event");
         hasStopped.current = true;
@@ -34,8 +34,7 @@ export const useStopLossOnSingleProduct = (
         const currentVolume = src.positions.reduce(
           (acc, cur) =>
             cur.product_id === source_product_id
-              ? acc +
-                (cur.variant === PositionVariant.LONG ? 1 : -1) * cur.volume
+              ? acc + (cur.direction === "LONG" ? 1 : -1) * cur.volume
               : acc,
           0
         );
@@ -51,7 +50,7 @@ export const useStopLossOnSingleProduct = (
     const currentVolume = src.positions.reduce(
       (acc, cur) =>
         cur.product_id === source_product_id
-          ? acc + (cur.variant === PositionVariant.LONG ? 1 : -1) * cur.volume
+          ? acc + (cur.direction === "LONG" ? 1 : -1) * cur.volume
           : acc,
       0
     );
@@ -63,15 +62,13 @@ export const useStopLossOnSingleProduct = (
       const mergedPositions = mergePositions(src.positions);
       for (const position of mergedPositions) {
         const order: IOrder = {
-          client_order_id: UUID(),
+          order_id: UUID(),
           account_id: tar.account_id,
           product_id: position.product_id,
           position_id: position.position_id,
-          type: OrderType.MARKET,
-          direction:
-            position.variant === PositionVariant.LONG
-              ? OrderDirection.OPEN_LONG
-              : OrderDirection.OPEN_SHORT,
+          order_type: "MARKET",
+          order_direction:
+            position.direction === "LONG" ? "OPEN_LONG" : "OPEN_SHORT",
           volume: position.volume,
         };
         ex.submitOrder(order);
@@ -94,34 +91,32 @@ export const useStopLossOnSingleProduct = (
         position.position_price,
         position.volume,
         -(drawdown_quota - position.floating_profit),
-        position.variant,
+        position.direction!,
         tar.money.currency,
         (product_id) =>
           ex.getQuote(source_account_id, product_id) || { ask: 1, bid: 1 }
       );
       mapProductIdVariantToClosePrice[
-        `${position.product_id}${position.variant}`
+        `${position.product_id}${position.direction}`
       ] = price;
     }
     // ISSUE: 需要按照计算好的平仓价格分别平掉每一个头寸
     for (const position of tar.positions) {
       const closePrice =
         mapProductIdVariantToClosePrice[
-          `${position.product_id}${position.variant}`
+          `${position.product_id}${position.direction}`
         ];
       if (Number.isNaN(closePrice)) {
         continue;
       }
       const order: IOrder = {
-        client_order_id: UUID(),
+        order_id: UUID(),
         account_id: tar.account_id,
         product_id: position.product_id,
         position_id: position.position_id,
-        type: OrderType.STOP,
-        direction:
-          position.variant === PositionVariant.LONG
-            ? OrderDirection.CLOSE_LONG
-            : OrderDirection.CLOSE_SHORT,
+        order_type: "STOP",
+        order_direction:
+          position.direction === "LONG" ? "CLOSE_LONG" : "CLOSE_SHORT",
         volume: position.volume,
         price: closePrice,
       };
@@ -130,7 +125,7 @@ export const useStopLossOnSingleProduct = (
     ex.submitOrder(...stopLossOrders.current);
     return () => {
       stopLossOrders.current.forEach((order) => {
-        ex.cancelOrder(order.client_order_id);
+        ex.cancelOrder(order.order_id!);
       });
       stopLossOrders.current.clear();
     };
@@ -143,14 +138,12 @@ export const useStopLossOnSingleProduct = (
     const orders: IOrder[] = [];
     for (const position of tar.positions) {
       const order: IOrder = {
+        order_id: UUID(),
         account_id: tar.account_id,
-        client_order_id: UUID(),
-        type: OrderType.MARKET,
+        order_type: "MARKET",
         position_id: position.position_id,
-        direction:
-          position.variant === PositionVariant.LONG
-            ? OrderDirection.CLOSE_LONG
-            : OrderDirection.CLOSE_SHORT,
+        order_direction:
+          position.direction === "LONG" ? "CLOSE_LONG" : "CLOSE_SHORT",
         product_id: position.product_id,
         volume: position.volume,
       };
@@ -159,7 +152,7 @@ export const useStopLossOnSingleProduct = (
     }
     return () => {
       for (const order of orders) {
-        ex.cancelOrder(order.client_order_id);
+        ex.cancelOrder(order.order_id!);
       }
     };
   });
@@ -173,7 +166,7 @@ export const useStopLossOnSingleProduct = (
         const theOrder = {
           ...order,
           account_id: tar.account_id,
-          client_order_id: UUID(),
+          order_id: UUID(),
           volume: order.volume,
         };
         ex.submitOrder(theOrder);
@@ -182,7 +175,7 @@ export const useStopLossOnSingleProduct = (
     }
     return () => {
       for (const order of orders) {
-        ex.cancelOrder(order.client_order_id);
+        ex.cancelOrder(order.order_id!);
       }
     };
   });

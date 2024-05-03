@@ -15,9 +15,6 @@ export const useSeries = global.useSeries;
 export const useState = global.useState;
 export const formatTime = global.formatTime;
 export const UUID = global.UUID;
-export const PositionVariant = global.PositionVariant;
-export const OrderDirection = global.OrderDirection;
-export const OrderType = global.OrderType;
 
 export * from "./constants/products";
 export * from "./indicators/ATR";

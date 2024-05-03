@@ -7,11 +7,11 @@
  */
 export const mergePositions = (positions: IPosition[]): IPosition[] => {
   const mapProductIdToPosition = positions.reduce((acc, cur) => {
-    const { product_id, variant } = cur;
-    if (!acc[`${product_id}-${variant}`]) {
-      acc[`${product_id}-${variant}`] = { ...cur };
+    const { product_id, direction } = cur;
+    if (!acc[`${product_id}-${direction}`]) {
+      acc[`${product_id}-${direction}`] = { ...cur };
     } else {
-      let thePosition = acc[`${product_id}-${variant}`];
+      let thePosition = acc[`${product_id}-${direction}`];
       thePosition = {
         ...thePosition,
         volume: thePosition.volume + cur.volume,
@@ -26,7 +26,7 @@ export const mergePositions = (positions: IPosition[]): IPosition[] => {
             cur.closable_price * cur.volume) /
           (thePosition.volume + cur.volume),
       };
-      acc[`${product_id}-${variant}`] = thePosition;
+      acc[`${product_id}-${direction}`] = thePosition;
     }
     return acc;
   }, {} as Record<string, IPosition>);
